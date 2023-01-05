@@ -30,13 +30,9 @@ exports.up = (pgm) => {
       notNull: true,
       default: pgm.func('current_timestamp'),
     },
-    updated_at: {
-      type: 'timestamp',
-      notNull: true,
-    },
-  });
-};
+  })
+}
 
 exports.down = (pgm) => {
-  pgm.dropTable('authentications');
-};
+  pgm.dropTable('authentications')
+}
