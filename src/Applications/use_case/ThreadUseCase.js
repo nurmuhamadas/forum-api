@@ -23,6 +23,10 @@ class ThreadUseCase {
     )
     return this._threadRepository.addComment(registerComment)
   }
+
+  async getThread(threadId) {
+    return this._threadRepository.getThread(threadId)
+  }
 }
 
 module.exports = ThreadUseCase

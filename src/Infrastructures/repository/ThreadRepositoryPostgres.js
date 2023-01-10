@@ -1,5 +1,6 @@
 const NotFoundError = require('../../Commons/exceptions/NotFoundError')
 const ThreadRepository = require('../../Domains/threads/ThreadRepository')
+const DetailedThread = require('../../Domains/threads/entities/DetailedThread')
 const RegisteredComment = require('../../Domains/threads/entities/RegisteredComment')
 const RegisteredThread = require('../../Domains/threads/entities/RegisteredThread')
 
@@ -49,6 +50,39 @@ class ThreadRepositoryPostgres extends ThreadRepository {
     const result = await this._pool.query(query)
 
     return new RegisteredComment(userId, { ...result.rows[0] })
+  }
+
+  async getThread(threadId) {
+    const queryThread = {
+      text: `SELECT threads.*, users.username FROM threads
+            INNER JOIN users ON users.id = threads.user_id
+            WHERE threads.id = $1;`,
+      values: [threadId],
+    }
+    const queryComment = {
+      text: `SELECT comments.*, users.username FROM comments
+            INNER JOIN users ON users.id = comments.user_id
+            WHERE comments.thread_id = $1;`,
+      values: [threadId],
+    }
+
+    const resultThread = await this._pool.query(queryThread)
+    const resultComment = await this._pool.query(queryComment)
+    const thread = {
+      id: resultThread.rows[0].id,
+      title: resultThread.rows[0].title,
+      body: resultThread.rows[0].body,
+      date: resultThread.rows[0].created_at,
+      username: resultThread.rows[0].username,
+    }
+    const comments = resultComment.rows.map((d) => ({
+      id: d.id,
+      username: d.username,
+      date: d.created_at,
+      content: d.content,
+    }))
+
+    return new DetailedThread(thread, comments)
   }
 }
 

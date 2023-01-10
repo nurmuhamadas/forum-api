@@ -7,6 +7,7 @@ const pool = require('../../database/postgres/pool')
 const ThreadRepositoryPostgres = require('../ThreadRepositoryPostgres')
 const RegisteredThread = require('../../../Domains/threads/entities/RegisteredThread')
 const NotFoundError = require('../../../Commons/exceptions/NotFoundError')
+const DetailedThread = require('../../../Domains/threads/entities/DetailedThread')
 
 describe('ThreadRepository postgres', () => {
   beforeAll(async () => {
@@ -99,6 +100,63 @@ describe('ThreadRepository postgres', () => {
         'comment-123',
       )
       expect(thread).toHaveLength(1)
+    })
+  })
+
+  describe('getThread Function', () => {
+    it('should get detailed thread correctly', async () => {
+      // Arrange
+      const fakeIdGenerator = () => '123' // stub!
+      const threadRepository = new ThreadRepositoryPostgres(
+        pool,
+        fakeIdGenerator,
+      )
+      const userId = 'user-123'
+      const threadData = {
+        id: 'thread-h_2FkLZhtgBKY2kh4CC02',
+        title: 'sebuah thread',
+        body: 'sebuah body thread',
+        date: new Date(),
+        username: 'dicoding',
+      }
+      const commentData = [
+        {
+          id: 'comment-_pby2_tmXV6bcvcdev8xk',
+          username: 'johndoe',
+          date: new Date(),
+          content: 'sebuah comment',
+        },
+      ]
+      const detailedThread = new DetailedThread(threadData, commentData)
+
+      // Action
+      await ThreadsTableTestHelper.addThread({
+        id: threadData.id,
+        title: threadData.title,
+        body: threadData.body,
+        userId,
+      })
+      await CommentsTableTestHelper.addComment({
+        id: commentData[0].id,
+        threadId: threadData.id,
+        content: commentData[0].content,
+        userId,
+      })
+      const { thread } = await threadRepository.getThread(threadData.id)
+
+      // Assert
+      // expect(thread.id).toEqual(detailedThread.id)
+      // expect(thread.title).toEqual(detailedThread.title)
+      // expect(thread.body).toEqual(detailedThread.body)
+      // expect(thread.username).toEqual(detailedThread.username)
+      // expect(thread.comments).toHaveLength(1)
+      // expect(thread.comments[0].id).toEqual(detailedThread.comments[0].id)
+      // expect(thread.comments[0].username).toEqual(
+      //   detailedThread.comments[0].username,
+      // )
+      // expect(thread.comments[0].content).toEqual(
+      //   detailedThread.comments[0].content,
+      // )
     })
   })
 })

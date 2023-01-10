@@ -4,6 +4,7 @@ const RegisterThread = require('../../../Domains/threads/entities/RegisterThread
 const ThreadRepository = require('../../../Domains/threads/ThreadRepository')
 const RegisterComment = require('../../../Domains/threads/entities/RegisterComment')
 const RegisteredComment = require('../../../Domains/threads/entities/RegisteredComment')
+const DetailedThread = require('../../../Domains/threads/entities/DetailedThread')
 
 describe('ThreadUseCase', () => {
   describe('AddThread', () => {
@@ -89,6 +90,47 @@ describe('ThreadUseCase', () => {
       expect(mockThreadRepository.addComment).toBeCalledWith(
         new RegisterComment(userId, threadId, useCasePayload),
       )
+    })
+  })
+
+  describe('GetThread', () => {
+    it('should orchestrating the get thread action correctly', async () => {
+      // Arrange
+      const threadData = {
+        id: 'thread-h_2FkLZhtgBKY2kh4CC02',
+        title: 'sebuah thread',
+        body: 'sebuah body thread',
+        date: new Date(),
+        username: 'dicoding',
+      }
+      const commentData = [
+        {
+          id: 'comment-_pby2_tmXV6bcvcdev8xk',
+          username: 'johndoe',
+          date: new Date(),
+          content: 'sebuah comment',
+        },
+      ]
+      const expectedDetailedThread = new DetailedThread(threadData, commentData)
+
+      /** creating dependency of use case */
+      const mockThreadRepository = new ThreadRepository()
+      /** mocking needed function */
+      mockThreadRepository.getThread = jest
+        .fn()
+        .mockImplementation(() => Promise.resolve(expectedDetailedThread))
+
+      /** creating use case instance */
+      const getThreadUseCase = new ThreadUseCase({
+        threadRepository: mockThreadRepository,
+      })
+
+      // Action
+      const detailedThread = await getThreadUseCase.getThread(threadData.id)
+
+      // Assert
+      expect(detailedThread).toStrictEqual(expectedDetailedThread)
+      expect(mockThreadRepository.getThread).toBeCalledWith(threadData.id)
     })
   })
 })

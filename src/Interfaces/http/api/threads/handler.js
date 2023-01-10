@@ -6,6 +6,7 @@ class ThreadsHandler {
 
     this.postThreadHandler = this.postThreadHandler.bind(this)
     this.postCommentHandler = this.postCommentHandler.bind(this)
+    this.getThreadHandler = this.getThreadHandler.bind(this)
   }
 
   async postThreadHandler({ payload, auth }, h) {
@@ -20,6 +21,24 @@ class ThreadsHandler {
       },
     })
     response.code(201)
+    return response
+  }
+
+  async getThreadHandler({ params }, h) {
+    const { threadId } = params
+
+    const threadUseCase = this._container.getInstance(ThreadUseCase.name)
+
+    await threadUseCase.verifyAvailableThread(threadId)
+    const { thread } = await threadUseCase.getThread(threadId)
+
+    const response = h.response({
+      status: 'success',
+      data: {
+        thread,
+      },
+    })
+    response.code(200)
     return response
   }
 
