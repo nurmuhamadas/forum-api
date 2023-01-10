@@ -13,10 +13,10 @@ describe('a RegisterThread entities', () => {
 
     // Action
     expect(() => new RegisterThread(userId, payload1)).toThrowError(
-      'REGISTER_TRHEAD.NOT_CONTAIN_NEEDED_PROPERTY',
+      'REGISTER_THREAD.NOT_CONTAIN_NEEDED_PROPERTY',
     )
     expect(() => new RegisterThread(userId, payload2)).toThrowError(
-      'REGISTER_TRHEAD.NOT_CONTAIN_NEEDED_PROPERTY',
+      'REGISTER_THREAD.NOT_CONTAIN_NEEDED_PROPERTY',
     )
   })
 
@@ -30,7 +30,7 @@ describe('a RegisterThread entities', () => {
 
     // Action and Assert
     expect(() => new RegisterThread(userId, payload)).toThrowError(
-      'REGISTER_TRHEAD.NOT_MEET_DATA_TYPE_SPECIFICATION',
+      'REGISTER_THREAD.NOT_MEET_DATA_TYPE_SPECIFICATION',
     )
   })
 
@@ -45,7 +45,7 @@ describe('a RegisterThread entities', () => {
 
     // Action and Assert
     expect(() => new RegisterThread(userId, payload)).toThrowError(
-      'REGISTER_TRHEAD.TITLE_LIMIT_CHAR',
+      'REGISTER_THREAD.TITLE_LIMIT_CHAR',
     )
   })
 

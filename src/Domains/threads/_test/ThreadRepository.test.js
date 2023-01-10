@@ -9,5 +9,11 @@ describe('ThreadRepository interface', () => {
     await expect(threadRepository.addThread({})).rejects.toThrowError(
       'THREAD_REPOSITORY.METHOD_NOT_IMPLEMENTED',
     )
+    await expect(
+      threadRepository.verifyAvailableThread({}),
+    ).rejects.toThrowError('THREAD_REPOSITORY.METHOD_NOT_IMPLEMENTED')
+    await expect(threadRepository.addComment({})).rejects.toThrowError(
+      'THREAD_REPOSITORY.METHOD_NOT_IMPLEMENTED',
+    )
   })
 })

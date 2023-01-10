@@ -10,7 +10,7 @@ class RegisterThread {
 
   _verifyPayload({ userId, title, body }) {
     if (!userId || !body || !title) {
-      throw new Error('REGISTER_TRHEAD.NOT_CONTAIN_NEEDED_PROPERTY')
+      throw new Error('REGISTER_THREAD.NOT_CONTAIN_NEEDED_PROPERTY')
     }
 
     if (
@@ -18,11 +18,11 @@ class RegisterThread {
       typeof body !== 'string' ||
       typeof title !== 'string'
     ) {
-      throw new Error('REGISTER_TRHEAD.NOT_MEET_DATA_TYPE_SPECIFICATION')
+      throw new Error('REGISTER_THREAD.NOT_MEET_DATA_TYPE_SPECIFICATION')
     }
 
     if (title.length > 150) {
-      throw new Error('REGISTER_TRHEAD.TITLE_LIMIT_CHAR')
+      throw new Error('REGISTER_THREAD.TITLE_LIMIT_CHAR')
     }
   }
 }

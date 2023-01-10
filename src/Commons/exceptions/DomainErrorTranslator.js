@@ -34,15 +34,22 @@ DomainErrorTranslator._directories = {
   'DELETE_AUTHENTICATION_USE_CASE.PAYLOAD_NOT_MEET_DATA_TYPE_SPECIFICATION':
     new InvariantError('refresh token harus string'),
 
-  'REGISTER_TRHEAD.NOT_CONTAIN_NEEDED_PROPERTY': new InvariantError(
+  'REGISTER_THREAD.NOT_CONTAIN_NEEDED_PROPERTY': new InvariantError(
     'tidak dapat membuat thread baru karena properti yang dibutuhkan tidak lengkap',
   ),
-  'REGISTER_TRHEAD.NOT_MEET_DATA_TYPE_SPECIFICATION': new InvariantError(
+  'REGISTER_THREAD.NOT_MEET_DATA_TYPE_SPECIFICATION': new InvariantError(
     'tidak dapat membuat thread baru karena tipe data tidak sesuai',
   ),
-  'REGISTER_TRHEAD.TITLE_LIMIT_CHAR': new InvariantError(
-    'tidak dapat membuat thread baru karena karakter username melebihi batas limit',
+  'REGISTER_THREAD.TITLE_LIMIT_CHAR': new InvariantError(
+    'tidak dapat membuat thread baru karena karakter title melebihi batas limit',
   ),
+  'REGISTER_THREAD.COMMENT.NOT_CONTAIN_NEEDED_PROPERTY': new InvariantError(
+    'tidak dapat membuat comment baru karena properti yang dibutuhkan tidak lengkap',
+  ),
+  'REGISTER_THREAD.COMMENT.NOT_MEET_DATA_TYPE_SPECIFICATION':
+    new InvariantError(
+      'tidak dapat membuat comment baru karena tipe data tidak sesuai',
+    ),
 }
 
 module.exports = DomainErrorTranslator
