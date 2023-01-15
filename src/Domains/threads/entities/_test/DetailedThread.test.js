@@ -56,7 +56,7 @@ describe('a DetailedThread entities', () => {
     const commentData = [
       {
         id: 'comment-_pby2_tmXV6bcvcdev8xk',
-        username: 'johndoe',
+        username: 'dicoding',
         date: new Date(),
         content: 'sebuah comment',
       },

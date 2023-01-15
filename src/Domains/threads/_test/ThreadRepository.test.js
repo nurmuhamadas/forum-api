@@ -18,5 +18,14 @@ describe('ThreadRepository interface', () => {
     await expect(threadRepository.getThread({})).rejects.toThrowError(
       'THREAD_REPOSITORY.METHOD_NOT_IMPLEMENTED',
     )
+    await expect(threadRepository.deleteComment(1)).rejects.toThrowError(
+      'THREAD_REPOSITORY.METHOD_NOT_IMPLEMENTED',
+    )
+    await expect(
+      threadRepository.verifyAvailableComment(1),
+    ).rejects.toThrowError('THREAD_REPOSITORY.METHOD_NOT_IMPLEMENTED')
+    await expect(
+      threadRepository.verifyCommentOwner(1, 1),
+    ).rejects.toThrowError('THREAD_REPOSITORY.METHOD_NOT_IMPLEMENTED')
   })
 })

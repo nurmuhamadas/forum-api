@@ -5,12 +5,15 @@ const JwtTokenManager = require('../src/Infrastructures/security/JwtTokenManager
 const UsersTableTestHelper = require('./UsersTableTestHelper')
 
 const ServerTestHelper = {
-  async getAccessToken({ username = 'dicoding', password = 'screet123' }) {
-    const userId = 'user-123'
+  async getAccessToken({
+    userId = 'user-123',
+    username = 'dicoding',
+    password = 'screet123',
+  }) {
     const jwtTokenManager = new JwtTokenManager(Jwt.token)
 
     await UsersTableTestHelper.addUser({ id: userId, username, password })
-    return await jwtTokenManager.createAccessToken({ username, id: userId })
+    return jwtTokenManager.createAccessToken({ username, id: userId })
   },
 
   async cleanAllTable() {

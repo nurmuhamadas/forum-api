@@ -73,6 +73,33 @@ describe('ThreadRepository postgres', () => {
     })
   })
 
+  describe('verifyAvailableComment function', () => {
+    it('should throw NotFoundError if comment is not found', async () => {
+      // Arrange
+      const threadRepository = new ThreadRepositoryPostgres(pool, {})
+      const threadId = 'thread'
+
+      // Action and Assert
+      await expect(
+        threadRepository.verifyAvailableComment(threadId),
+      ).rejects.toThrowError(NotFoundError)
+    })
+
+    it('should not throw NotFoundError if comment is exist', async () => {
+      // Arrange
+      const threadRepository = new ThreadRepositoryPostgres(pool, {})
+      const threadId = 'thread-123'
+      const commentId = 'comment-123'
+
+      // Action and Assert
+      await ThreadsTableTestHelper.addThread({ id: threadId })
+      await CommentsTableTestHelper.addComment({ id: commentId })
+      await expect(
+        threadRepository.verifyAvailableComment(commentId),
+      ).resolves.not.toThrowError(NotFoundError)
+    })
+  })
+
   describe('addComment Function', () => {
     beforeAll(async () => {
       await ThreadsTableTestHelper.addThread({})
@@ -103,6 +130,33 @@ describe('ThreadRepository postgres', () => {
     })
   })
 
+  describe('deleteComment Function', () => {
+    beforeAll(async () => {
+      await ThreadsTableTestHelper.addThread({})
+      await CommentsTableTestHelper.addComment({})
+    })
+
+    it('should soft delete comment', async () => {
+      // Arrange
+      const fakeIdGenerator = () => '123' // stub!
+      const threadRepository = new ThreadRepositoryPostgres(
+        pool,
+        fakeIdGenerator,
+      )
+      const commentId = 'comment-123'
+
+      // Action
+      const deletedCommentId = await threadRepository.deleteComment(commentId)
+      const deletedComment = await CommentsTableTestHelper.findCommentById(
+        commentId,
+      )
+
+      // Assert
+      expect(deletedCommentId).toEqual(commentId)
+      expect(deletedComment[0].is_delete).toEqual(true)
+    })
+  })
+
   describe('getThread Function', () => {
     it('should get detailed thread correctly', async () => {
       // Arrange
@@ -122,12 +176,15 @@ describe('ThreadRepository postgres', () => {
       const commentData = [
         {
           id: 'comment-_pby2_tmXV6bcvcdev8xk',
-          username: 'johndoe',
+          username: 'dicoding',
           date: new Date(),
           content: 'sebuah comment',
         },
       ]
-      const detailedThread = new DetailedThread(threadData, commentData)
+      const { thread: expectedThread } = new DetailedThread(
+        threadData,
+        commentData,
+      )
 
       // Action
       await ThreadsTableTestHelper.addThread({
@@ -145,18 +202,18 @@ describe('ThreadRepository postgres', () => {
       const { thread } = await threadRepository.getThread(threadData.id)
 
       // Assert
-      // expect(thread.id).toEqual(detailedThread.id)
-      // expect(thread.title).toEqual(detailedThread.title)
-      // expect(thread.body).toEqual(detailedThread.body)
-      // expect(thread.username).toEqual(detailedThread.username)
-      // expect(thread.comments).toHaveLength(1)
-      // expect(thread.comments[0].id).toEqual(detailedThread.comments[0].id)
-      // expect(thread.comments[0].username).toEqual(
-      //   detailedThread.comments[0].username,
-      // )
-      // expect(thread.comments[0].content).toEqual(
-      //   detailedThread.comments[0].content,
-      // )
+      expect(thread).toBeDefined()
+      expect(thread.title).toEqual(expectedThread.title)
+      expect(thread.body).toEqual(expectedThread.body)
+      expect(thread.username).toEqual(expectedThread.username)
+      expect(thread.comments).toHaveLength(1)
+      expect(thread.comments[0].id).toEqual(expectedThread.comments[0].id)
+      expect(thread.comments[0].username).toEqual(
+        expectedThread.comments[0].username,
+      )
+      expect(thread.comments[0].content).toEqual(
+        expectedThread.comments[0].content,
+      )
     })
   })
 })

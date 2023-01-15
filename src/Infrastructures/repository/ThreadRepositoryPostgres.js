@@ -1,3 +1,5 @@
+const { ERROR_MESSAGE } = require('../../Commons/consts')
+const AuthorizationError = require('../../Commons/exceptions/AuthorizationError')
 const NotFoundError = require('../../Commons/exceptions/NotFoundError')
 const ThreadRepository = require('../../Domains/threads/ThreadRepository')
 const DetailedThread = require('../../Domains/threads/entities/DetailedThread')
@@ -27,14 +29,40 @@ class ThreadRepositoryPostgres extends ThreadRepository {
 
   async verifyAvailableThread(threadId) {
     const query = {
-      text: 'SELECT * FROM threads WHERE id=$1',
+      text: 'SELECT id FROM threads WHERE id=$1',
       values: [threadId],
     }
 
     const result = await this._pool.query(query)
 
     if (!result.rowCount) {
-      throw new NotFoundError('thread tidak ditemukan')
+      throw new NotFoundError(ERROR_MESSAGE.threadNotFound)
+    }
+  }
+
+  async verifyAvailableComment(commentId) {
+    const query = {
+      text: 'SELECT id FROM comments WHERE id = $1',
+      values: [commentId],
+    }
+
+    const result = await this._pool.query(query)
+
+    if (!result.rowCount) {
+      throw new NotFoundError(ERROR_MESSAGE.commentNotFound)
+    }
+  }
+
+  async verifyCommentOwner(userId, commentId) {
+    const query = {
+      text: 'SELECT user_id FROM comments WHERE id = $1',
+      values: [commentId],
+    }
+
+    const result = await this._pool.query(query)
+
+    if (result.rows[0]?.user_id !== userId) {
+      throw new AuthorizationError(ERROR_MESSAGE.haveNotAccess)
     }
   }
 
@@ -50,6 +78,17 @@ class ThreadRepositoryPostgres extends ThreadRepository {
     const result = await this._pool.query(query)
 
     return new RegisteredComment(userId, { ...result.rows[0] })
+  }
+
+  async deleteComment(commentId) {
+    const query = {
+      text: 'UPDATE comments SET is_delete = true WHERE id = $1 RETURNING id',
+      values: [commentId],
+    }
+
+    const result = await this._pool.query(query)
+
+    return result.rows[0]?.id
   }
 
   async getThread(threadId) {

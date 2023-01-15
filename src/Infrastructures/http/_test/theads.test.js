@@ -5,6 +5,7 @@ const ServerTestHelper = require('../../../../tests/ServerTestHelper')
 const ThreadsTableTestHelper = require('../../../../tests/ThreadsTableTestHelper')
 const CommentsTableTestHelper = require('../../../../tests/CommentsTableTestHelper')
 const UsersTableTestHelper = require('../../../../tests/UsersTableTestHelper')
+const { ERROR_MESSAGE } = require('../../../Commons/consts')
 
 describe('/threads endpoint', () => {
   afterAll(async () => {
@@ -191,7 +192,7 @@ describe('/threads endpoint', () => {
       const responseJson = JSON.parse(response.payload)
       expect(response.statusCode).toEqual(404)
       expect(responseJson.status).toEqual('fail')
-      expect(responseJson.message).toEqual('thread tidak ditemukan')
+      expect(responseJson.message).toEqual(ERROR_MESSAGE.threadNotFound)
     })
 
     it('should response 400 when request payload not contain needed property', async () => {
@@ -252,6 +253,98 @@ describe('/threads endpoint', () => {
       expect(responseJson.message).toEqual(
         'tidak dapat membuat comment baru karena tipe data tidak sesuai',
       )
+    })
+  })
+
+  describe('when DELETE /threads/{threadId}/comments/{commentId}', () => {
+    let accessToken = ''
+    beforeEach(async () => {
+      // Add user and login
+      accessToken = await ServerTestHelper.getAccessToken({})
+      // Add thread
+      await ThreadsTableTestHelper.addThread({ id: 'thread-123' })
+      await CommentsTableTestHelper.addComment({ id: 'comment-123' })
+    })
+
+    it('should response 404 when thread is not found', async () => {
+      // Arrange
+      const server = await createServer(container)
+
+      // Action
+      const response = await server.inject({
+        method: 'DELETE',
+        url: '/threads/wrongid/comments/comment-123',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+
+      const responseJson = JSON.parse(response.payload)
+      expect(response.statusCode).toEqual(404)
+      expect(responseJson.status).toEqual('fail')
+      expect(responseJson.message).toEqual(ERROR_MESSAGE.threadNotFound)
+    })
+
+    it('should response 404 when comment is not found', async () => {
+      // Arrange
+      const server = await createServer(container)
+
+      // Action
+      const response = await server.inject({
+        method: 'DELETE',
+        url: '/threads/thread-123/comments/wrongid',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+
+      const responseJson = JSON.parse(response.payload)
+      expect(response.statusCode).toEqual(404)
+      expect(responseJson.status).toEqual('fail')
+      expect(responseJson.message).toEqual(ERROR_MESSAGE.commentNotFound)
+    })
+
+    it('should response 403 when user is not comment owner', async () => {
+      // Arrange
+      const server = await createServer(container)
+      const accessTokenOtherUser = await ServerTestHelper.getAccessToken({
+        username: 'user New',
+        userId: 'user-321',
+      })
+
+      // Action
+      const response = await server.inject({
+        method: 'DELETE',
+        url: '/threads/thread-123/comments/comment-123',
+        headers: {
+          Authorization: `Bearer ${accessTokenOtherUser}`,
+        },
+      })
+
+      const responseJson = JSON.parse(response.payload)
+      expect(response.statusCode).toEqual(403)
+      expect(responseJson.status).toEqual('fail')
+      expect(responseJson.message).toEqual(ERROR_MESSAGE.haveNotAccess)
+    })
+
+    it('should response 200 and delete comment', async () => {
+      // Arrange
+      const commentId = 'comment-123'
+      const server = await createServer(container)
+
+      // Action
+      const response = await server.inject({
+        method: 'DELETE',
+        url: `/threads/thread-123/comments/${commentId}`,
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+
+      // Assert
+      const responseJson = JSON.parse(response.payload)
+      expect(response.statusCode).toEqual(200)
+      expect(responseJson.status).toEqual('success')
     })
   })
 

@@ -93,6 +93,33 @@ describe('ThreadUseCase', () => {
     })
   })
 
+  describe('DeleteComment', () => {
+    it('should orchestrating the add comment action correctly', async () => {
+      // Arrange
+      const commentId = 'comment-123'
+
+      /** creating dependency of use case */
+      const mockThreadRepository = new ThreadRepository()
+
+      /** mocking needed function */
+      mockThreadRepository.deleteComment = jest
+        .fn()
+        .mockImplementation(() => Promise.resolve(commentId))
+
+      /** creating use case instance */
+      const threadUseCase = new ThreadUseCase({
+        threadRepository: mockThreadRepository,
+      })
+
+      // Action and Assert
+      const deletedCommentId = await threadUseCase.deleteComment(commentId)
+
+      // Assert
+      expect(deletedCommentId).toStrictEqual(commentId)
+      expect(mockThreadRepository.deleteComment).toBeCalledWith(commentId)
+    })
+  })
+
   describe('GetThread', () => {
     it('should orchestrating the get thread action correctly', async () => {
       // Arrange
@@ -106,7 +133,7 @@ describe('ThreadUseCase', () => {
       const commentData = [
         {
           id: 'comment-_pby2_tmXV6bcvcdev8xk',
-          username: 'johndoe',
+          username: 'dicoding',
           date: new Date(),
           content: 'sebuah comment',
         },
