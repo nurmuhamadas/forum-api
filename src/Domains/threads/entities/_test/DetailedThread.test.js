@@ -35,6 +35,7 @@ describe('a DetailedThread entities', () => {
         username: 123,
         date: { a: 'a' },
         content: 'sebuah comment',
+        is_delete: false,
       },
     ]
 
@@ -59,6 +60,15 @@ describe('a DetailedThread entities', () => {
         username: 'dicoding',
         date: new Date(),
         content: 'sebuah comment',
+        is_delete: false,
+      },
+    ]
+    const expectedCommentData = [
+      {
+        id: 'comment-_pby2_tmXV6bcvcdev8xk',
+        username: 'dicoding',
+        date: new Date(),
+        content: 'sebuah comment',
       },
     ]
 
@@ -68,7 +78,44 @@ describe('a DetailedThread entities', () => {
     // Assert
     expect(thread).toStrictEqual({
       ...threadData,
-      comments: commentData,
+      comments: expectedCommentData,
+    })
+  })
+
+  it('should create DetailedThread object correctly with deleted comment', () => {
+    // Arrange
+    const threadData = {
+      id: 'thread-h_2FkLZhtgBKY2kh4CC02',
+      title: 'sebuah thread',
+      body: 'sebuah body thread',
+      date: new Date(),
+      username: 'dicoding',
+    }
+    const commentData = [
+      {
+        id: 'comment-_pby2_tmXV6bcvcdev8xk',
+        username: 'dicoding',
+        date: new Date(),
+        content: 'sebuah comment',
+        is_delete: true,
+      },
+    ]
+    const expectedCommentData = [
+      {
+        id: 'comment-_pby2_tmXV6bcvcdev8xk',
+        username: 'dicoding',
+        date: new Date(),
+        content: '**komentar telah dihapus**',
+      },
+    ]
+
+    // Action
+    const { thread } = new DetailedThread(threadData, commentData)
+
+    // Assert
+    expect(thread).toStrictEqual({
+      ...threadData,
+      comments: expectedCommentData,
     })
   })
 })

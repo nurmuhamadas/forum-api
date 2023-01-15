@@ -4,7 +4,12 @@ class DetailedThread {
 
     this.thread = {
       ...thread,
-      comments,
+      comments: comments.map((d) => ({
+        id: d.id,
+        username: d.username,
+        date: d.date,
+        content: d.is_delete ? '**komentar telah dihapus**' : d.content,
+      })),
     }
   }
 
@@ -19,6 +24,7 @@ class DetailedThread {
       (comments.length &&
         (!comments[0].id ||
           !comments[0].username ||
+          comments[0].is_delete === undefined ||
           !comments[0].date ||
           !comments[0].content))
     ) {
@@ -36,6 +42,7 @@ class DetailedThread {
       (comments.length &&
         (typeof comments[0].id !== 'string' ||
           typeof comments[0].username !== 'string' ||
+          typeof comments[0].is_delete !== 'boolean' ||
           !(comments[0].date instanceof Date) ||
           typeof comments[0].content !== 'string'))
     ) {

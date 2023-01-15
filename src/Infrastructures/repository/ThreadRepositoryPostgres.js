@@ -119,6 +119,7 @@ class ThreadRepositoryPostgres extends ThreadRepository {
       username: d.username,
       date: d.created_at,
       content: d.content,
+      is_delete: d.is_delete,
     }))
 
     return new DetailedThread(thread, comments)

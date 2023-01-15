@@ -179,6 +179,7 @@ describe('ThreadRepository postgres', () => {
           username: 'dicoding',
           date: new Date(),
           content: 'sebuah comment',
+          is_delete: false,
         },
       ]
       const { thread: expectedThread } = new DetailedThread(

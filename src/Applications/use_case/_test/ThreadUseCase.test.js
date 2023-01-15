@@ -136,6 +136,7 @@ describe('ThreadUseCase', () => {
           username: 'dicoding',
           date: new Date(),
           content: 'sebuah comment',
+          is_delete: false,
         },
       ]
       const expectedDetailedThread = new DetailedThread(threadData, commentData)
