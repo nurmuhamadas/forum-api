@@ -13,11 +13,17 @@ describe('a DetailedThread entities', () => {
         content: 'sebuah comment',
       },
     ]
+    const commentReplies = [
+      {
+        id: 'reply-_pby2_tmXV6bcvcdev8xk',
+        commentId: 'comment-_pby2_tmXV6bcvcdev8xk',
+      },
+    ]
 
     // Action and Assert
-    expect(() => new DetailedThread(threadData, commentData)).toThrowError(
-      'DETAILED_THREAD.NOT_CONTAIN_NEEDED_PROPERTY',
-    )
+    expect(
+      () => new DetailedThread(threadData, commentData, commentReplies),
+    ).toThrowError('DETAILED_THREAD.NOT_CONTAIN_NEEDED_PROPERTY')
   })
 
   it('should throw error when payload did not meet data type specification', () => {
@@ -38,11 +44,21 @@ describe('a DetailedThread entities', () => {
         is_delete: false,
       },
     ]
+    const commentReplies = [
+      {
+        id: true,
+        commentId: {},
+        username: 123,
+        date: 'new Date()',
+        content: true,
+        is_delete: 'false',
+      },
+    ]
 
     // Action and Assert
-    expect(() => new DetailedThread(threadData, commentData)).toThrowError(
-      'DETAILED_THREAD.NOT_MEET_DATA_TYPE_SPECIFICATION',
-    )
+    expect(
+      () => new DetailedThread(threadData, commentData, commentReplies),
+    ).toThrowError('DETAILED_THREAD.NOT_MEET_DATA_TYPE_SPECIFICATION')
   })
 
   it('should create DetailedThread object correctly', () => {
@@ -54,6 +70,24 @@ describe('a DetailedThread entities', () => {
       date: new Date(),
       username: 'dicoding',
     }
+    const commentReplies = [
+      {
+        id: 'reply-_pby2_tmXV6bcvcdev8xk',
+        commentId: 'comment-_pby2_tmXV6bcvcdev8xk',
+        username: 'dicoding',
+        date: new Date(),
+        content: 'sebuah balasan komentar',
+        is_delete: false,
+      },
+    ]
+    const expectedCommentReplies = [
+      {
+        id: 'reply-_pby2_tmXV6bcvcdev8xk',
+        username: 'dicoding',
+        date: new Date(),
+        content: 'sebuah balasan komentar',
+      },
+    ]
     const commentData = [
       {
         id: 'comment-_pby2_tmXV6bcvcdev8xk',
@@ -69,11 +103,16 @@ describe('a DetailedThread entities', () => {
         username: 'dicoding',
         date: new Date(),
         content: 'sebuah comment',
+        replies: expectedCommentReplies,
       },
     ]
 
     // Action
-    const { thread } = new DetailedThread(threadData, commentData)
+    const { thread } = new DetailedThread(
+      threadData,
+      commentData,
+      commentReplies,
+    )
 
     // Assert
     expect(thread).toStrictEqual({
@@ -82,7 +121,7 @@ describe('a DetailedThread entities', () => {
     })
   })
 
-  it('should create DetailedThread object correctly with deleted comment', () => {
+  it('should create DetailedThread object correctly with deleted comment and deleted comment reply', () => {
     // Arrange
     const threadData = {
       id: 'thread-h_2FkLZhtgBKY2kh4CC02',
@@ -91,6 +130,24 @@ describe('a DetailedThread entities', () => {
       date: new Date(),
       username: 'dicoding',
     }
+    const commentReplies = [
+      {
+        id: 'reply-_pby2_tmXV6bcvcdev8xk',
+        commentId: 'comment-_pby2_tmXV6bcvcdev8xk',
+        username: 'dicoding',
+        date: new Date(),
+        content: 'sebuah balasan komentar',
+        is_delete: true,
+      },
+    ]
+    const expectedCommentReplies = [
+      {
+        id: 'reply-_pby2_tmXV6bcvcdev8xk',
+        username: 'dicoding',
+        date: new Date(),
+        content: '**balasan telah dihapus**',
+      },
+    ]
     const commentData = [
       {
         id: 'comment-_pby2_tmXV6bcvcdev8xk',
@@ -106,11 +163,16 @@ describe('a DetailedThread entities', () => {
         username: 'dicoding',
         date: new Date(),
         content: '**komentar telah dihapus**',
+        replies: expectedCommentReplies,
       },
     ]
 
     // Action
-    const { thread } = new DetailedThread(threadData, commentData)
+    const { thread } = new DetailedThread(
+      threadData,
+      commentData,
+      commentReplies,
+    )
 
     // Assert
     expect(thread).toStrictEqual({

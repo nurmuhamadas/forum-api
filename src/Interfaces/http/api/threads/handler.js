@@ -120,7 +120,6 @@ class ThreadsHandler {
     await threadUseCase.verifyAvailableThread(threadId)
     await threadUseCase.verifyAvailableComment(commentId)
     await threadUseCase.verifyAvailableCommentReply(replyId)
-    console.log('ok')
     await threadUseCase.verifyCommentReplyOwner(userId, replyId)
     await threadUseCase.deleteCommentReply(replyId)
 

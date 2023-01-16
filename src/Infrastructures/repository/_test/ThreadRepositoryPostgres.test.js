@@ -280,9 +280,20 @@ describe('ThreadRepository postgres', () => {
           is_delete: false,
         },
       ]
+      const commentReplies = [
+        {
+          id: 'reply-_pby2_tmXV6bcvcdev8xk',
+          commentId: commentData[0].id,
+          username: 'dicoding',
+          date: new Date(),
+          content: 'sebuah balasan komentar',
+          is_delete: false,
+        },
+      ]
       const { thread: expectedThread } = new DetailedThread(
         threadData,
         commentData,
+        commentReplies,
       )
 
       // Action
@@ -298,6 +309,15 @@ describe('ThreadRepository postgres', () => {
         content: commentData[0].content,
         userId,
       })
+      await CommentRepliesTableTestHelper.addCommentReply({
+        id: commentReplies[0].id,
+        commentId: commentData[0].id,
+        content: commentReplies[0].content,
+        userId,
+      })
+      const rep = await CommentRepliesTableTestHelper.findCommentReplyById(
+        commentReplies[0].id,
+      )
       const { thread } = await threadRepository.getThread(threadData.id)
 
       // Assert
@@ -312,6 +332,16 @@ describe('ThreadRepository postgres', () => {
       )
       expect(thread.comments[0].content).toEqual(
         expectedThread.comments[0].content,
+      )
+      expect(thread.comments[0].replies).toHaveLength(1)
+      expect(thread.comments[0].replies[0].id).toEqual(
+        expectedThread.comments[0].replies[0].id,
+      )
+      expect(thread.comments[0].replies[0].username).toEqual(
+        expectedThread.comments[0].replies[0].username,
+      )
+      expect(thread.comments[0].replies[0].content).toEqual(
+        expectedThread.comments[0].replies[0].content,
       )
     })
   })

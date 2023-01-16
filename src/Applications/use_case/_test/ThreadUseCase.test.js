@@ -221,7 +221,21 @@ describe('ThreadUseCase', () => {
           is_delete: false,
         },
       ]
-      const expectedDetailedThread = new DetailedThread(threadData, commentData)
+      const commentReplies = [
+        {
+          id: 'reply-_pby2_tmXV6bcvcdev8xk',
+          commentId: 'comment-_pby2_tmXV6bcvcdev8xk',
+          username: 'dicoding',
+          date: new Date(),
+          content: 'sebuah balasan komentar',
+          is_delete: false,
+        },
+      ]
+      const expectedDetailedThread = new DetailedThread(
+        threadData,
+        commentData,
+        commentReplies,
+      )
 
       /** creating dependency of use case */
       const mockThreadRepository = new ThreadRepository()

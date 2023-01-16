@@ -80,7 +80,6 @@ class ThreadRepositoryPostgres extends ThreadRepository {
   }
 
   async verifyCommentReplyOwner(userId, replyId) {
-    console.log(userId, replyId)
     const query = {
       text: 'SELECT user_id FROM comment_replies WHERE id = $1',
       values: [replyId],
@@ -153,7 +152,8 @@ class ThreadRepositoryPostgres extends ThreadRepository {
     const queryComment = {
       text: `SELECT comments.*, users.username FROM comments
             INNER JOIN users ON users.id = comments.user_id
-            WHERE comments.thread_id = $1;`,
+            WHERE comments.thread_id = $1
+            ORDER BY comments.created_at ASC;`,
       values: [threadId],
     }
 
@@ -173,8 +173,31 @@ class ThreadRepositoryPostgres extends ThreadRepository {
       content: d.content,
       is_delete: d.is_delete,
     }))
+    const commentIds = comments.map((c) => c.id)
 
-    return new DetailedThread(thread, comments)
+    let commentsReply = []
+    if (commentIds.length > 0) {
+      const queryCommentReply = {
+        text: `SELECT comment_replies.*, users.username FROM comment_replies
+            INNER JOIN users ON users.id = comment_replies.user_id
+            WHERE comment_replies.comment_id IN (${commentIds
+              .map((_, i) => `$${i + 1}`)
+              .join(', ')})
+            ORDER BY comment_replies.created_at ASC;`,
+        values: [...commentIds],
+      }
+      const resultCommentReply = await this._pool.query(queryCommentReply)
+      commentsReply = resultCommentReply.rows.map((d) => ({
+        id: d.id,
+        commentId: d.comment_id,
+        username: d.username,
+        date: d.created_at,
+        content: d.content,
+        is_delete: d.is_delete,
+      }))
+    }
+
+    return new DetailedThread(thread, comments, commentsReply)
   }
 }
 
