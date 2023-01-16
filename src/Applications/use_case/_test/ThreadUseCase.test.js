@@ -5,6 +5,8 @@ const ThreadRepository = require('../../../Domains/threads/ThreadRepository')
 const RegisterComment = require('../../../Domains/threads/entities/RegisterComment')
 const RegisteredComment = require('../../../Domains/threads/entities/RegisteredComment')
 const DetailedThread = require('../../../Domains/threads/entities/DetailedThread')
+const RegisterCommentReply = require('../../../Domains/threads/entities/RegisterCommentReply')
+const RegisteredCommentReply = require('../../../Domains/threads/entities/RegisteredCommentReply')
 
 describe('ThreadUseCase', () => {
   describe('AddThread', () => {
@@ -117,6 +119,86 @@ describe('ThreadUseCase', () => {
       // Assert
       expect(deletedCommentId).toStrictEqual(commentId)
       expect(mockThreadRepository.deleteComment).toBeCalledWith(commentId)
+    })
+  })
+
+  describe('AddCommentReply', () => {
+    it('should orchestrating the add comment reply action correctly', async () => {
+      // Arrange
+      const userId = 'user-123'
+      const threadId = 'thread-123'
+      const commentId = 'comment-123'
+      const useCasePayload = {
+        id: 'reply-123',
+        content: 'Content of the comment reply',
+      }
+      const expectedRegisteredCommentReply = new RegisteredCommentReply(
+        userId,
+        useCasePayload,
+      )
+
+      /** creating dependency of use case */
+      const mockThreadRepository = new ThreadRepository()
+
+      /** mocking needed function */
+      mockThreadRepository.addCommentReply = jest
+        .fn()
+        .mockImplementation(() =>
+          Promise.resolve(expectedRegisteredCommentReply),
+        )
+
+      /** creating use case instance */
+      const getThreadUseCase = new ThreadUseCase({
+        threadRepository: mockThreadRepository,
+      })
+
+      // Action
+      const registeredCommentReply = await getThreadUseCase.addCommentReply({
+        userId,
+        threadId,
+        commentId,
+        payload: useCasePayload,
+      })
+
+      // Assert
+      expect(registeredCommentReply).toStrictEqual(
+        expectedRegisteredCommentReply,
+      )
+      expect(mockThreadRepository.addCommentReply).toBeCalledWith(
+        new RegisterCommentReply({
+          userId,
+          threadId,
+          commentId,
+          payload: useCasePayload,
+        }),
+      )
+    })
+  })
+
+  describe('DeleteCommentReply', () => {
+    it('should orchestrating the add comment action correctly', async () => {
+      // Arrange
+      const replyId = 'reply-123'
+
+      /** creating dependency of use case */
+      const mockThreadRepository = new ThreadRepository()
+
+      /** mocking needed function */
+      mockThreadRepository.deleteCommentReply = jest
+        .fn()
+        .mockImplementation(() => Promise.resolve(replyId))
+
+      /** creating use case instance */
+      const threadUseCase = new ThreadUseCase({
+        threadRepository: mockThreadRepository,
+      })
+
+      // Action and Assert
+      const deletedCommentId = await threadUseCase.deleteCommentReply(replyId)
+
+      // Assert
+      expect(deletedCommentId).toStrictEqual(replyId)
+      expect(mockThreadRepository.deleteCommentReply).toBeCalledWith(replyId)
     })
   })
 

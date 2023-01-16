@@ -8,6 +8,8 @@ const ThreadRepositoryPostgres = require('../ThreadRepositoryPostgres')
 const RegisteredThread = require('../../../Domains/threads/entities/RegisteredThread')
 const NotFoundError = require('../../../Commons/exceptions/NotFoundError')
 const DetailedThread = require('../../../Domains/threads/entities/DetailedThread')
+const RegisterCommentReply = require('../../../Domains/threads/entities/RegisterCommentReply')
+const CommentRepliesTableTestHelper = require('../../../../tests/CommentRepliesTableTestHelper')
 
 describe('ThreadRepository postgres', () => {
   beforeAll(async () => {
@@ -17,6 +19,7 @@ describe('ThreadRepository postgres', () => {
   afterEach(async () => {
     await ThreadsTableTestHelper.cleanTable()
     await CommentsTableTestHelper.cleanTable()
+    await CommentRepliesTableTestHelper.cleanTable()
   })
 
   afterAll(async () => {
@@ -100,6 +103,35 @@ describe('ThreadRepository postgres', () => {
     })
   })
 
+  describe('verifyAvailableCommentReply function', () => {
+    it('should throw NotFoundError if comment reply is not found', async () => {
+      // Arrange
+      const threadRepository = new ThreadRepositoryPostgres(pool, {})
+      const replyId = 'reply'
+
+      // Action and Assert
+      await expect(
+        threadRepository.verifyAvailableCommentReply(replyId),
+      ).rejects.toThrowError(NotFoundError)
+    })
+
+    it('should not throw NotFoundError if comment is exist', async () => {
+      // Arrange
+      const threadRepository = new ThreadRepositoryPostgres(pool, {})
+      const threadId = 'thread-123'
+      const commentId = 'comment-123'
+      const replyId = 'reply-123'
+
+      // Action and Assert
+      await ThreadsTableTestHelper.addThread({ id: threadId })
+      await CommentsTableTestHelper.addComment({ id: commentId })
+      await CommentRepliesTableTestHelper.addCommentReply({ id: replyId })
+      await expect(
+        threadRepository.verifyAvailableCommentReply(replyId),
+      ).resolves.not.toThrowError(NotFoundError)
+    })
+  })
+
   describe('addComment Function', () => {
     beforeAll(async () => {
       await ThreadsTableTestHelper.addThread({})
@@ -154,6 +186,72 @@ describe('ThreadRepository postgres', () => {
       // Assert
       expect(deletedCommentId).toEqual(commentId)
       expect(deletedComment[0].is_delete).toEqual(true)
+    })
+  })
+
+  describe('addCommentReply Function', () => {
+    beforeAll(async () => {
+      await ThreadsTableTestHelper.addThread({})
+      await CommentsTableTestHelper.addComment({})
+    })
+
+    it('should add comment relpy to database', async () => {
+      // Arrange
+      const fakeIdGenerator = () => '123' // stub!
+      const threadRepository = new ThreadRepositoryPostgres(
+        pool,
+        fakeIdGenerator,
+      )
+      const userId = 'user-123'
+      const threadId = 'thread-123'
+      const commentId = 'comment-123'
+      const payload = {
+        content: 'Content of The comment reply',
+      }
+      const registerCommentReply = new RegisterCommentReply({
+        userId,
+        threadId,
+        commentId,
+        payload,
+      })
+
+      // Action
+      await threadRepository.addCommentReply(registerCommentReply)
+
+      // Assert
+      const thread = await CommentRepliesTableTestHelper.findCommentReplyById(
+        'reply-123',
+      )
+      expect(thread).toHaveLength(1)
+    })
+  })
+
+  describe('deleteComment Function', () => {
+    beforeAll(async () => {
+      await ThreadsTableTestHelper.addThread({})
+      await CommentsTableTestHelper.addComment({})
+      await CommentRepliesTableTestHelper.addCommentReply({})
+    })
+
+    it('should soft delete comment', async () => {
+      // Arrange
+      const fakeIdGenerator = () => '123' // stub!
+      const threadRepository = new ThreadRepositoryPostgres(
+        pool,
+        fakeIdGenerator,
+      )
+      const commentReplyId = 'reply-123'
+
+      // Action
+      const deletedCommentReplyId = await threadRepository.deleteCommentReply(
+        commentReplyId,
+      )
+      const deletedCommentReply =
+        await CommentRepliesTableTestHelper.findCommentReplyById(commentReplyId)
+
+      // Assert
+      expect(deletedCommentReplyId).toEqual(commentReplyId)
+      expect(deletedCommentReply[0].is_delete).toEqual(true)
     })
   })
 

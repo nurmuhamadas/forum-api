@@ -37,11 +37,11 @@ describe('a RegisteredComment entities', () => {
     }
 
     // Action
-    const registeredUser = new RegisteredComment(userId, payload)
+    const registeredComment = new RegisteredComment(userId, payload)
 
     // Assert
-    expect(registeredUser.owner).toEqual(userId)
-    expect(registeredUser.id).toEqual(payload.id)
-    expect(registeredUser.content).toEqual(payload.content)
+    expect(registeredComment.owner).toEqual(userId)
+    expect(registeredComment.id).toEqual(payload.id)
+    expect(registeredComment.content).toEqual(payload.content)
   })
 })

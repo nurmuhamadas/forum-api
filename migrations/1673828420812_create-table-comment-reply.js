@@ -1,5 +1,5 @@
 exports.up = (pgm) => {
-  pgm.createTable('comments', {
+  pgm.createTable('comment_replies', {
     id: {
       type: 'VARCHAR(50)',
       primaryKey: true,
@@ -8,10 +8,10 @@ exports.up = (pgm) => {
       type: 'TEXT',
       notNull: true,
     },
-    thread_id: {
+    comment_id: {
       type: 'VARCHAR(50)',
       notNull: true,
-      references: 'threads(id)',
+      references: 'comments(id)',
       onDelete: 'CASCADE',
     },
     user_id: {
@@ -34,5 +34,5 @@ exports.up = (pgm) => {
 }
 
 exports.down = (pgm) => {
-  pgm.dropTable('comments')
+  pgm.dropTable('comment_replies')
 }

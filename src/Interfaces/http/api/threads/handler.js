@@ -7,6 +7,8 @@ class ThreadsHandler {
     this.postThreadHandler = this.postThreadHandler.bind(this)
     this.postCommentHandler = this.postCommentHandler.bind(this)
     this.deleteCommentHandler = this.deleteCommentHandler.bind(this)
+    this.postCommentReplyHandler = this.postCommentReplyHandler.bind(this)
+    this.deleteCommentReplyHandler = this.deleteCommentReplyHandler.bind(this)
     this.getThreadHandler = this.getThreadHandler.bind(this)
   }
 
@@ -76,6 +78,51 @@ class ThreadsHandler {
     await threadUseCase.verifyAvailableComment(commentId)
     await threadUseCase.verifyCommentOwner(userId, commentId)
     await threadUseCase.deleteComment(commentId)
+
+    const response = h.response({
+      status: 'success',
+    })
+    response.code(200)
+    return response
+  }
+
+  async postCommentReplyHandler({ payload, auth, params }, h) {
+    const { id: userId } = auth.credentials
+    const { threadId, commentId } = params
+
+    const threadUseCase = this._container.getInstance(ThreadUseCase.name)
+
+    await threadUseCase.verifyAvailableThread(threadId)
+    await threadUseCase.verifyAvailableComment(commentId)
+    const addedReply = await threadUseCase.addCommentReply({
+      userId,
+      threadId,
+      commentId,
+      payload,
+    })
+
+    const response = h.response({
+      status: 'success',
+      data: {
+        addedReply,
+      },
+    })
+    response.code(201)
+    return response
+  }
+
+  async deleteCommentReplyHandler({ auth, params }, h) {
+    const { id: userId } = auth.credentials
+    const { threadId, commentId, replyId } = params
+
+    const threadUseCase = this._container.getInstance(ThreadUseCase.name)
+
+    await threadUseCase.verifyAvailableThread(threadId)
+    await threadUseCase.verifyAvailableComment(commentId)
+    await threadUseCase.verifyAvailableCommentReply(replyId)
+    console.log('ok')
+    await threadUseCase.verifyCommentReplyOwner(userId, replyId)
+    await threadUseCase.deleteCommentReply(replyId)
 
     const response = h.response({
       status: 'success',

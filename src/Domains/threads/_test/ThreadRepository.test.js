@@ -27,5 +27,11 @@ describe('ThreadRepository interface', () => {
     await expect(
       threadRepository.verifyCommentOwner(1, 1),
     ).rejects.toThrowError('THREAD_REPOSITORY.METHOD_NOT_IMPLEMENTED')
+    await expect(
+      threadRepository.verifyAvailableCommentReply(1),
+    ).rejects.toThrowError('THREAD_REPOSITORY.METHOD_NOT_IMPLEMENTED')
+    await expect(
+      threadRepository.verifyCommentReplyOwner(1, 1),
+    ).rejects.toThrowError('THREAD_REPOSITORY.METHOD_NOT_IMPLEMENTED')
   })
 })

@@ -17,7 +17,9 @@ const ServerTestHelper = {
   },
 
   async cleanAllTable() {
-    await pool.query('TRUNCATE threads, users, authentications, comments;')
+    await pool.query(
+      'TRUNCATE threads, users, authentications, comments, comment_replies;',
+    )
   },
 }
 
