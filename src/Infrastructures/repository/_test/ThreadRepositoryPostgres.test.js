@@ -344,5 +344,39 @@ describe('ThreadRepository postgres', () => {
         expectedThread.comments[0].replies[0].content,
       )
     })
+
+    it('should get detailed thread correctly without comment', async () => {
+      // Arrange
+      const fakeIdGenerator = () => '123' // stub!
+      const threadRepository = new ThreadRepositoryPostgres(
+        pool,
+        fakeIdGenerator,
+      )
+      const userId = 'user-123'
+      const threadData = {
+        id: 'thread-h_2FkLZhtgBKY2kh4CC02',
+        title: 'sebuah thread',
+        body: 'sebuah body thread',
+        date: new Date(),
+        username: 'dicoding',
+      }
+      const { thread: expectedThread } = new DetailedThread(threadData, [], [])
+
+      // Action
+      await ThreadsTableTestHelper.addThread({
+        id: threadData.id,
+        title: threadData.title,
+        body: threadData.body,
+        userId,
+      })
+      const { thread } = await threadRepository.getThread(threadData.id)
+
+      // Assert
+      expect(thread).toBeDefined()
+      expect(thread.title).toEqual(expectedThread.title)
+      expect(thread.body).toEqual(expectedThread.body)
+      expect(thread.username).toEqual(expectedThread.username)
+      expect(thread.comments).toHaveLength(0)
+    })
   })
 })
