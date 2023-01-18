@@ -32,7 +32,6 @@ class ThreadsHandler {
 
     const threadUseCase = this._container.getInstance(ThreadUseCase.name)
 
-    await threadUseCase.verifyAvailableThread(threadId)
     const { thread } = await threadUseCase.getThread(threadId)
 
     const response = h.response({
@@ -51,7 +50,6 @@ class ThreadsHandler {
 
     const threadUseCase = this._container.getInstance(ThreadUseCase.name)
 
-    await threadUseCase.verifyAvailableThread(threadId)
     const addedComment = await threadUseCase.addComment(
       userId,
       threadId,
@@ -74,10 +72,7 @@ class ThreadsHandler {
 
     const threadUseCase = this._container.getInstance(ThreadUseCase.name)
 
-    await threadUseCase.verifyAvailableThread(threadId)
-    await threadUseCase.verifyAvailableComment(commentId)
-    await threadUseCase.verifyCommentOwner(userId, commentId)
-    await threadUseCase.deleteComment(commentId)
+    await threadUseCase.deleteComment({ userId, threadId, commentId })
 
     const response = h.response({
       status: 'success',
@@ -92,8 +87,6 @@ class ThreadsHandler {
 
     const threadUseCase = this._container.getInstance(ThreadUseCase.name)
 
-    await threadUseCase.verifyAvailableThread(threadId)
-    await threadUseCase.verifyAvailableComment(commentId)
     const addedReply = await threadUseCase.addCommentReply({
       userId,
       threadId,
@@ -117,11 +110,12 @@ class ThreadsHandler {
 
     const threadUseCase = this._container.getInstance(ThreadUseCase.name)
 
-    await threadUseCase.verifyAvailableThread(threadId)
-    await threadUseCase.verifyAvailableComment(commentId)
-    await threadUseCase.verifyAvailableCommentReply(replyId)
-    await threadUseCase.verifyCommentReplyOwner(userId, replyId)
-    await threadUseCase.deleteCommentReply(replyId)
+    await threadUseCase.deleteCommentReply({
+      userId,
+      threadId,
+      commentId,
+      replyId,
+    })
 
     const response = h.response({
       status: 'success',

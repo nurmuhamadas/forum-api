@@ -10,6 +10,9 @@ const NotFoundError = require('../../../Commons/exceptions/NotFoundError')
 const DetailedThread = require('../../../Domains/threads/entities/DetailedThread')
 const RegisterCommentReply = require('../../../Domains/threads/entities/RegisterCommentReply')
 const CommentRepliesTableTestHelper = require('../../../../tests/CommentRepliesTableTestHelper')
+const RegisteredComment = require('../../../Domains/threads/entities/RegisteredComment')
+const RegisteredCommentReply = require('../../../Domains/threads/entities/RegisteredCommentReply')
+const AuthorizationError = require('../../../Commons/exceptions/AuthorizationError')
 
 describe('ThreadRepository postgres', () => {
   beforeAll(async () => {
@@ -41,12 +44,17 @@ describe('ThreadRepository postgres', () => {
         body: 'Body of Thread',
       }
       const registerThread = new RegisterThread(userId, payload)
+      const expectedRegisteredThread = new RegisteredThread(userId, {
+        id: 'thread-123',
+        title: payload.title,
+      })
 
       // Action
-      await threadRepository.addThread(registerThread)
+      const registeredThread = await threadRepository.addThread(registerThread)
 
       // Assert
       const thread = await ThreadsTableTestHelper.findThreadById('thread-123')
+      expect(registeredThread).toStrictEqual(expectedRegisteredThread)
       expect(thread).toHaveLength(1)
     })
   })
@@ -103,6 +111,45 @@ describe('ThreadRepository postgres', () => {
     })
   })
 
+  describe('verifyCommentOwner function', () => {
+    it('should throw AuthorizationError if user is not owner of the comment', async () => {
+      // Arrange
+      const threadRepository = new ThreadRepositoryPostgres(pool, {})
+      const firstUserId = 'user-123'
+      const secondUserId = 'user-321'
+      const commentId = 'comment-123'
+
+      // Action
+      await UsersTableTestHelper.addUser({
+        id: secondUserId,
+        username: 'second user',
+      })
+      await ThreadsTableTestHelper.addThread({})
+      await CommentsTableTestHelper.addComment({ userId: firstUserId })
+
+      // Assert
+      await expect(
+        threadRepository.verifyCommentOwner(secondUserId, commentId),
+      ).rejects.toThrowError(AuthorizationError)
+
+      UsersTableTestHelper.deleteUser(secondUserId)
+    })
+
+    it('should not throw AuthorizationError if user is owner of the comment', async () => {
+      // Arrange
+      const userId = 'user-123'
+      const commentId = 'comment-123'
+      const threadRepository = new ThreadRepositoryPostgres(pool, {})
+
+      // Action and Assert
+      await ThreadsTableTestHelper.addThread({})
+      await CommentsTableTestHelper.addComment({ id: commentId })
+      await expect(
+        threadRepository.verifyCommentOwner(userId, commentId),
+      ).resolves.not.toThrowError(AuthorizationError)
+    })
+  })
+
   describe('verifyAvailableCommentReply function', () => {
     it('should throw NotFoundError if comment reply is not found', async () => {
       // Arrange
@@ -132,6 +179,49 @@ describe('ThreadRepository postgres', () => {
     })
   })
 
+  describe('verifyCommentReplyOwner function', () => {
+    it('should throw AuthorizationError if user is not owner of the comment reply', async () => {
+      // Arrange
+      const threadRepository = new ThreadRepositoryPostgres(pool, {})
+      const firstUserId = 'user-123'
+      const secondUserId = 'user-321'
+      const replyId = 'reply-123'
+
+      // Action
+      await UsersTableTestHelper.addUser({
+        id: secondUserId,
+        username: 'second user',
+      })
+      await ThreadsTableTestHelper.addThread({})
+      await CommentsTableTestHelper.addComment({})
+      await CommentRepliesTableTestHelper.addCommentReply({
+        userId: firstUserId,
+      })
+
+      // Assert
+      await expect(
+        threadRepository.verifyCommentReplyOwner(secondUserId, replyId),
+      ).rejects.toThrowError(AuthorizationError)
+
+      UsersTableTestHelper.deleteUser(secondUserId)
+    })
+
+    it('should not throw AuthorizationError if user is owner of the comment reply', async () => {
+      // Arrange
+      const userId = 'user-123'
+      const replyId = 'reply-123'
+      const threadRepository = new ThreadRepositoryPostgres(pool, {})
+
+      // Action and Assert
+      await ThreadsTableTestHelper.addThread({})
+      await CommentsTableTestHelper.addComment({})
+      await CommentRepliesTableTestHelper.addCommentReply({ userId })
+      await expect(
+        threadRepository.verifyCommentReplyOwner(userId, replyId),
+      ).resolves.not.toThrowError(AuthorizationError)
+    })
+  })
+
   describe('addComment Function', () => {
     beforeAll(async () => {
       await ThreadsTableTestHelper.addThread({})
@@ -150,14 +240,21 @@ describe('ThreadRepository postgres', () => {
         content: 'Content of The comment',
       }
       const registerComment = new RegisterComment(userId, threadId, payload)
+      const expectedRegisteredComment = new RegisteredComment(userId, {
+        id: 'comment-123',
+        content: payload.content,
+      })
 
       // Action
-      await threadRepository.addComment(registerComment)
+      const registeredComment = await threadRepository.addComment(
+        registerComment,
+      )
 
       // Assert
       const thread = await CommentsTableTestHelper.findCommentById(
         'comment-123',
       )
+      expect(registeredComment).toStrictEqual(expectedRegisteredComment)
       expect(thread).toHaveLength(1)
     })
   })
@@ -214,13 +311,22 @@ describe('ThreadRepository postgres', () => {
         commentId,
         payload,
       })
+      const expectedRegisteredCommentReply = new RegisteredCommentReply(
+        userId,
+        { id: 'reply-123', content: payload.content },
+      )
 
       // Action
-      await threadRepository.addCommentReply(registerCommentReply)
+      const registeredCommentReply = await threadRepository.addCommentReply(
+        registerCommentReply,
+      )
 
       // Assert
       const thread = await CommentRepliesTableTestHelper.findCommentReplyById(
         'reply-123',
+      )
+      expect(registeredCommentReply).toStrictEqual(
+        expectedRegisteredCommentReply,
       )
       expect(thread).toHaveLength(1)
     })
@@ -302,22 +408,22 @@ describe('ThreadRepository postgres', () => {
         title: threadData.title,
         body: threadData.body,
         userId,
+        date: threadData.date,
       })
       await CommentsTableTestHelper.addComment({
         id: commentData[0].id,
         threadId: threadData.id,
         content: commentData[0].content,
         userId,
+        date: commentData[0].date,
       })
       await CommentRepliesTableTestHelper.addCommentReply({
         id: commentReplies[0].id,
         commentId: commentData[0].id,
         content: commentReplies[0].content,
         userId,
+        date: commentReplies[0].date,
       })
-      const rep = await CommentRepliesTableTestHelper.findCommentReplyById(
-        commentReplies[0].id,
-      )
       const { thread } = await threadRepository.getThread(threadData.id)
 
       // Assert
@@ -325,6 +431,7 @@ describe('ThreadRepository postgres', () => {
       expect(thread.title).toEqual(expectedThread.title)
       expect(thread.body).toEqual(expectedThread.body)
       expect(thread.username).toEqual(expectedThread.username)
+      expect(thread.date).toEqual(expectedThread.date)
       expect(thread.comments).toHaveLength(1)
       expect(thread.comments[0].id).toEqual(expectedThread.comments[0].id)
       expect(thread.comments[0].username).toEqual(
@@ -333,6 +440,7 @@ describe('ThreadRepository postgres', () => {
       expect(thread.comments[0].content).toEqual(
         expectedThread.comments[0].content,
       )
+      expect(thread.comments[0].date).toEqual(expectedThread.comments[0].date)
       expect(thread.comments[0].replies).toHaveLength(1)
       expect(thread.comments[0].replies[0].id).toEqual(
         expectedThread.comments[0].replies[0].id,
@@ -342,6 +450,9 @@ describe('ThreadRepository postgres', () => {
       )
       expect(thread.comments[0].replies[0].content).toEqual(
         expectedThread.comments[0].replies[0].content,
+      )
+      expect(thread.comments[0].replies[0].date).toEqual(
+        expectedThread.comments[0].replies[0].date,
       )
     })
 

@@ -4,6 +4,7 @@ const NotFoundError = require('../../Commons/exceptions/NotFoundError')
 const ThreadRepository = require('../../Domains/threads/ThreadRepository')
 const DetailedThread = require('../../Domains/threads/entities/DetailedThread')
 const RegisteredComment = require('../../Domains/threads/entities/RegisteredComment')
+const RegisteredCommentReply = require('../../Domains/threads/entities/RegisteredCommentReply')
 const RegisteredThread = require('../../Domains/threads/entities/RegisteredThread')
 
 class ThreadRepositoryPostgres extends ThreadRepository {
@@ -128,7 +129,7 @@ class ThreadRepositoryPostgres extends ThreadRepository {
 
     const result = await this._pool.query(query)
 
-    return new RegisteredComment(userId, { ...result.rows[0] })
+    return new RegisteredCommentReply(userId, { ...result.rows[0] })
   }
 
   async deleteCommentReply(replyId) {

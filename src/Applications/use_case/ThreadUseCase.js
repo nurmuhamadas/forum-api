@@ -12,53 +12,45 @@ class ThreadUseCase {
     return this._threadRepository.addThread(registerThread)
   }
 
-  async verifyAvailableComment(commentId) {
-    return this._threadRepository.verifyAvailableComment(commentId)
-  }
-
-  async verifyAvailableCommentReply(replyId) {
-    return this._threadRepository.verifyAvailableCommentReply(replyId)
-  }
-
-  async verifyCommentReplyOwner(userId, replyId) {
-    return this._threadRepository.verifyCommentReplyOwner(userId, replyId)
-  }
-
-  async verifyAvailableThread(userId, threadId) {
-    return this._threadRepository.verifyAvailableThread(userId, threadId)
-  }
-
-  async verifyCommentOwner(userId, commentId) {
-    return this._threadRepository.verifyCommentOwner(userId, commentId)
-  }
-
   async addComment(userId, threadId, useCasePayload) {
     const registerComment = new RegisterComment(
       userId,
       threadId,
       useCasePayload,
     )
+    await this._threadRepository.verifyAvailableThread(threadId)
     return this._threadRepository.addComment(registerComment)
   }
 
-  async deleteComment(userId) {
-    return this._threadRepository.deleteComment(userId)
+  async deleteComment({ threadId, userId, commentId }) {
+    await this._threadRepository.verifyAvailableThread(threadId)
+    await this._threadRepository.verifyAvailableComment(commentId)
+    await this._threadRepository.verifyCommentOwner(userId, commentId)
+    return this._threadRepository.deleteComment(commentId)
   }
 
-  async addCommentReply(userId, threadId, useCasePayload) {
-    const registerCommentReply = new RegisterCommentReply(
+  async addCommentReply({ userId, threadId, commentId, payload }) {
+    const registerCommentReply = new RegisterCommentReply({
       userId,
       threadId,
-      useCasePayload,
-    )
+      commentId,
+      payload,
+    })
+    await this._threadRepository.verifyAvailableThread(threadId)
+    await this._threadRepository.verifyAvailableComment(commentId)
     return this._threadRepository.addCommentReply(registerCommentReply)
   }
 
-  async deleteCommentReply(userId) {
-    return this._threadRepository.deleteCommentReply(userId)
+  async deleteCommentReply({ userId, threadId, commentId, replyId }) {
+    await this._threadRepository.verifyAvailableThread(threadId)
+    await this._threadRepository.verifyAvailableComment(commentId)
+    await this._threadRepository.verifyAvailableCommentReply(replyId)
+    await this._threadRepository.verifyCommentReplyOwner(userId, replyId)
+    return this._threadRepository.deleteCommentReply(replyId)
   }
 
   async getThread(threadId) {
+    await this._threadRepository.verifyAvailableThread(threadId)
     return this._threadRepository.getThread(threadId)
   }
 }

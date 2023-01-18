@@ -171,7 +171,9 @@ describe('/threads endpoint', () => {
 
     it('should response 404 when thread is not found', async () => {
       // Arrange
-      const requestPayload = {}
+      const requestPayload = {
+        content: 'content of the thread',
+      }
       const server = await createServer(container)
 
       // Add user and login
@@ -182,7 +184,7 @@ describe('/threads endpoint', () => {
       // Action
       const response = await server.inject({
         method: 'POST',
-        url: '/threads/thread-111/comments',
+        url: '/threads/wrong-id/comments',
         payload: requestPayload,
         headers: {
           Authorization: `Bearer ${accessToken}`,
