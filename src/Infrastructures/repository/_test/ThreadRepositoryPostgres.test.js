@@ -428,6 +428,7 @@ describe('ThreadRepository postgres', () => {
 
       // Assert
       expect(thread).toBeDefined()
+      expect(thread.id).toEqual(expectedThread.id)
       expect(thread.title).toEqual(expectedThread.title)
       expect(thread.body).toEqual(expectedThread.body)
       expect(thread.username).toEqual(expectedThread.username)
@@ -484,6 +485,7 @@ describe('ThreadRepository postgres', () => {
 
       // Assert
       expect(thread).toBeDefined()
+      expect(thread.id).toEqual(expectedThread.id)
       expect(thread.title).toEqual(expectedThread.title)
       expect(thread.body).toEqual(expectedThread.body)
       expect(thread.username).toEqual(expectedThread.username)

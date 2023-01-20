@@ -31,7 +31,9 @@ describe('ThreadUseCase', () => {
       /** mocking needed function */
       mockThreadRepository.addThread = jest
         .fn()
-        .mockImplementation(() => Promise.resolve(expectedRegisteredThread))
+        .mockImplementation(() =>
+          Promise.resolve(new RegisteredThread(userId, useCasePayload)),
+        )
 
       /** creating use case instance */
       const getThreadUseCase = new ThreadUseCase({
@@ -78,7 +80,9 @@ describe('ThreadUseCase', () => {
         .mockImplementation(() => Promise.resolve())
       mockThreadRepository.addComment = jest
         .fn()
-        .mockImplementation(() => Promise.resolve(expectedRegisteredComment))
+        .mockImplementation(() =>
+          Promise.resolve(new RegisteredComment(userId, useCasePayload)),
+        )
 
       /** creating use case instance */
       const getThreadUseCase = new ThreadUseCase({
@@ -183,7 +187,7 @@ describe('ThreadUseCase', () => {
       mockThreadRepository.addCommentReply = jest
         .fn()
         .mockImplementation(() =>
-          Promise.resolve(expectedRegisteredCommentReply),
+          Promise.resolve(new RegisteredCommentReply(userId, useCasePayload)),
         )
 
       /** creating use case instance */
@@ -323,7 +327,11 @@ describe('ThreadUseCase', () => {
         .mockImplementation(() => Promise.resolve())
       mockThreadRepository.getThread = jest
         .fn()
-        .mockImplementation(() => Promise.resolve(expectedDetailedThread))
+        .mockImplementation(() =>
+          Promise.resolve(
+            new DetailedThread(threadData, commentData, commentReplies),
+          ),
+        )
 
       /** creating use case instance */
       const getThreadUseCase = new ThreadUseCase({
