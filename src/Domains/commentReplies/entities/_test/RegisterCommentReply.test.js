@@ -11,7 +11,7 @@ describe('a RegisterCommentReply entities', () => {
     // Action
     expect(
       () => new RegisterCommentReply({ userId, threadId, commentId, payload }),
-    ).toThrowError('REGISTER_THREAD.COMMENT.REPLY.NOT_CONTAIN_NEEDED_PROPERTY')
+    ).toThrowError('REGISTER_COMMENT.REPLY.NOT_CONTAIN_NEEDED_PROPERTY')
   })
 
   it('should throw error when payload did not meet data type spesification', () => {
@@ -26,9 +26,7 @@ describe('a RegisterCommentReply entities', () => {
     // Action and Assert
     expect(
       () => new RegisterCommentReply({ userId, threadId, commentId, payload }),
-    ).toThrowError(
-      'REGISTER_THREAD.COMMENT.REPLY.NOT_MEET_DATA_TYPE_SPECIFICATION',
-    )
+    ).toThrowError('REGISTER_COMMENT.REPLY.NOT_MEET_DATA_TYPE_SPECIFICATION')
   })
 
   it('should create RegisterCommentReply object correctly', () => {

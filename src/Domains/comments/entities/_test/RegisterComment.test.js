@@ -9,7 +9,7 @@ describe('a RegisterComment entities', () => {
 
     // Action
     expect(() => new RegisterComment(userId, threadId, payload)).toThrowError(
-      'REGISTER_THREAD.COMMENT.NOT_CONTAIN_NEEDED_PROPERTY',
+      'REGISTER_COMMENT.NOT_CONTAIN_NEEDED_PROPERTY',
     )
   })
 
@@ -23,7 +23,7 @@ describe('a RegisterComment entities', () => {
 
     // Action and Assert
     expect(() => new RegisterComment(userId, threadId, payload)).toThrowError(
-      'REGISTER_THREAD.COMMENT.NOT_MEET_DATA_TYPE_SPECIFICATION',
+      'REGISTER_COMMENT.NOT_MEET_DATA_TYPE_SPECIFICATION',
     )
   })
 

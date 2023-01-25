@@ -10,7 +10,7 @@ class RegisterComment {
 
   _verifyPayload({ userId, threadId, content }) {
     if (!userId || !threadId || !content) {
-      throw new Error('REGISTER_THREAD.COMMENT.NOT_CONTAIN_NEEDED_PROPERTY')
+      throw new Error('REGISTER_COMMENT.NOT_CONTAIN_NEEDED_PROPERTY')
     }
 
     if (
@@ -18,9 +18,7 @@ class RegisterComment {
       typeof threadId !== 'string' ||
       typeof content !== 'string'
     ) {
-      throw new Error(
-        'REGISTER_THREAD.COMMENT.NOT_MEET_DATA_TYPE_SPECIFICATION',
-      )
+      throw new Error('REGISTER_COMMENT.NOT_MEET_DATA_TYPE_SPECIFICATION')
     }
   }
 }

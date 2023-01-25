@@ -11,9 +11,7 @@ class RegisterCommentReply {
 
   _verifyPayload({ userId, threadId, commentId, content }) {
     if (!userId || !threadId || !commentId || !content) {
-      throw new Error(
-        'REGISTER_THREAD.COMMENT.REPLY.NOT_CONTAIN_NEEDED_PROPERTY',
-      )
+      throw new Error('REGISTER_COMMENT.REPLY.NOT_CONTAIN_NEEDED_PROPERTY')
     }
 
     if (
@@ -22,9 +20,7 @@ class RegisterCommentReply {
       typeof commentId !== 'string' ||
       typeof content !== 'string'
     ) {
-      throw new Error(
-        'REGISTER_THREAD.COMMENT.REPLY.NOT_MEET_DATA_TYPE_SPECIFICATION',
-      )
+      throw new Error('REGISTER_COMMENT.REPLY.NOT_MEET_DATA_TYPE_SPECIFICATION')
     }
   }
 }
