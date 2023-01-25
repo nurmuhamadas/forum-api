@@ -12,31 +12,7 @@ describe('ThreadRepository interface', () => {
     await expect(
       threadRepository.verifyAvailableThread({}),
     ).rejects.toThrowError('THREAD_REPOSITORY.METHOD_NOT_IMPLEMENTED')
-    await expect(threadRepository.addComment({})).rejects.toThrowError(
-      'THREAD_REPOSITORY.METHOD_NOT_IMPLEMENTED',
-    )
     await expect(threadRepository.getThread({})).rejects.toThrowError(
-      'THREAD_REPOSITORY.METHOD_NOT_IMPLEMENTED',
-    )
-    await expect(threadRepository.deleteComment(1)).rejects.toThrowError(
-      'THREAD_REPOSITORY.METHOD_NOT_IMPLEMENTED',
-    )
-    await expect(
-      threadRepository.verifyAvailableComment(1),
-    ).rejects.toThrowError('THREAD_REPOSITORY.METHOD_NOT_IMPLEMENTED')
-    await expect(
-      threadRepository.verifyCommentOwner(1, 1),
-    ).rejects.toThrowError('THREAD_REPOSITORY.METHOD_NOT_IMPLEMENTED')
-    await expect(
-      threadRepository.verifyAvailableCommentReply(1),
-    ).rejects.toThrowError('THREAD_REPOSITORY.METHOD_NOT_IMPLEMENTED')
-    await expect(
-      threadRepository.verifyCommentReplyOwner(1, 1),
-    ).rejects.toThrowError('THREAD_REPOSITORY.METHOD_NOT_IMPLEMENTED')
-    await expect(threadRepository.addCommentReply({})).rejects.toThrowError(
-      'THREAD_REPOSITORY.METHOD_NOT_IMPLEMENTED',
-    )
-    await expect(threadRepository.deleteCommentReply(1)).rejects.toThrowError(
       'THREAD_REPOSITORY.METHOD_NOT_IMPLEMENTED',
     )
   })

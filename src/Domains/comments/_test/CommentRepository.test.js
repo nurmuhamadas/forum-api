@@ -1,0 +1,22 @@
+const CommentRepository = require('../CommentRepository')
+
+describe('CommentRepository interface', () => {
+  it('should throw error when invoke abstract behavior', async () => {
+    // Arrange
+    const commentRepository = new CommentRepository()
+
+    // Action and Assert
+    await expect(commentRepository.addComment({})).rejects.toThrowError(
+      'THREAD_REPOSITORY.METHOD_NOT_IMPLEMENTED',
+    )
+    await expect(commentRepository.deleteComment(1)).rejects.toThrowError(
+      'THREAD_REPOSITORY.METHOD_NOT_IMPLEMENTED',
+    )
+    await expect(
+      commentRepository.verifyAvailableComment(1),
+    ).rejects.toThrowError('THREAD_REPOSITORY.METHOD_NOT_IMPLEMENTED')
+    await expect(
+      commentRepository.verifyCommentOwner(1, 1),
+    ).rejects.toThrowError('THREAD_REPOSITORY.METHOD_NOT_IMPLEMENTED')
+  })
+})
