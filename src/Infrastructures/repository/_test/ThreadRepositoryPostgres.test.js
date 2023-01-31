@@ -92,33 +92,16 @@ describe('ThreadRepository postgres', () => {
         id: 'thread-h_2FkLZhtgBKY2kh4CC02',
         title: 'sebuah thread',
         body: 'sebuah body thread',
-        date: new Date(),
+        created_at: new Date(),
         username: 'dicoding',
       }
-      const commentData = [
-        {
-          id: 'comment-_pby2_tmXV6bcvcdev8xk',
-          username: 'dicoding',
-          date: new Date(),
-          content: 'sebuah comment',
-          is_delete: false,
-        },
-      ]
-      const commentReplies = [
-        {
-          id: 'reply-_pby2_tmXV6bcvcdev8xk',
-          commentId: commentData[0].id,
-          username: 'dicoding',
-          date: new Date(),
-          content: 'sebuah balasan komentar',
-          is_delete: false,
-        },
-      ]
-      const { thread: expectedThread } = new DetailedThread(
-        threadData,
-        commentData,
-        commentReplies,
-      )
+      const expectedThread = {
+        id: threadData.id,
+        title: threadData.title,
+        body: threadData.body,
+        created_at: threadData.created_at,
+        username: threadData.username,
+      }
 
       // Action
       await ThreadsTableTestHelper.addThread({
@@ -126,23 +109,9 @@ describe('ThreadRepository postgres', () => {
         title: threadData.title,
         body: threadData.body,
         userId,
-        date: threadData.date,
+        date: threadData.created_at,
       })
-      await CommentsTableTestHelper.addComment({
-        id: commentData[0].id,
-        threadId: threadData.id,
-        content: commentData[0].content,
-        userId,
-        date: commentData[0].date,
-      })
-      await CommentRepliesTableTestHelper.addCommentReply({
-        id: commentReplies[0].id,
-        commentId: commentData[0].id,
-        content: commentReplies[0].content,
-        userId,
-        date: commentReplies[0].date,
-      })
-      const { thread } = await threadRepository.getThread(threadData.id)
+      const thread = await threadRepository.getThread(threadData.id)
 
       // Assert
       expect(thread).toBeDefined()
@@ -151,63 +120,6 @@ describe('ThreadRepository postgres', () => {
       expect(thread.body).toEqual(expectedThread.body)
       expect(thread.username).toEqual(expectedThread.username)
       expect(thread.date).toEqual(expectedThread.date)
-      expect(thread.comments).toHaveLength(1)
-      expect(thread.comments[0].id).toEqual(expectedThread.comments[0].id)
-      expect(thread.comments[0].username).toEqual(
-        expectedThread.comments[0].username,
-      )
-      expect(thread.comments[0].content).toEqual(
-        expectedThread.comments[0].content,
-      )
-      expect(thread.comments[0].date).toEqual(expectedThread.comments[0].date)
-      expect(thread.comments[0].replies).toHaveLength(1)
-      expect(thread.comments[0].replies[0].id).toEqual(
-        expectedThread.comments[0].replies[0].id,
-      )
-      expect(thread.comments[0].replies[0].username).toEqual(
-        expectedThread.comments[0].replies[0].username,
-      )
-      expect(thread.comments[0].replies[0].content).toEqual(
-        expectedThread.comments[0].replies[0].content,
-      )
-      expect(thread.comments[0].replies[0].date).toEqual(
-        expectedThread.comments[0].replies[0].date,
-      )
-    })
-
-    it('should get detailed thread correctly without comment', async () => {
-      // Arrange
-      const fakeIdGenerator = () => '123' // stub!
-      const threadRepository = new ThreadRepositoryPostgres(
-        pool,
-        fakeIdGenerator,
-      )
-      const userId = 'user-123'
-      const threadData = {
-        id: 'thread-h_2FkLZhtgBKY2kh4CC02',
-        title: 'sebuah thread',
-        body: 'sebuah body thread',
-        date: new Date(),
-        username: 'dicoding',
-      }
-      const { thread: expectedThread } = new DetailedThread(threadData, [], [])
-
-      // Action
-      await ThreadsTableTestHelper.addThread({
-        id: threadData.id,
-        title: threadData.title,
-        body: threadData.body,
-        userId,
-      })
-      const { thread } = await threadRepository.getThread(threadData.id)
-
-      // Assert
-      expect(thread).toBeDefined()
-      expect(thread.id).toEqual(expectedThread.id)
-      expect(thread.title).toEqual(expectedThread.title)
-      expect(thread.body).toEqual(expectedThread.body)
-      expect(thread.username).toEqual(expectedThread.username)
-      expect(thread.comments).toHaveLength(0)
     })
   })
 })

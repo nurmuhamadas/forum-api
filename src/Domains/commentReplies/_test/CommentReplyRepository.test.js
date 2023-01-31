@@ -18,5 +18,8 @@ describe('CommentReplyRepository interface', () => {
     await expect(
       commentReplyRepository.deleteCommentReply(1),
     ).rejects.toThrowError('THREAD_REPOSITORY.METHOD_NOT_IMPLEMENTED')
+    await expect(
+      commentReplyRepository.getCommentRepliesByCommentIds([]),
+    ).rejects.toThrowError('THREAD_REPOSITORY.METHOD_NOT_IMPLEMENTED')
   })
 })

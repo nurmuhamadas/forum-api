@@ -27,17 +27,15 @@ describe('CommentReplyUseCase', () => {
       const mockCommentReplyRepository = new CommentReplyRepository()
 
       /** mocking needed function */
-      mockThreadRepository.verifyAvailableThread = jest
-        .fn()
-        .mockImplementation(() => Promise.resolve())
-      mockCommentRepository.verifyAvailableComment = jest
-        .fn()
-        .mockImplementation(() => Promise.resolve())
-      mockCommentReplyRepository.addCommentReply = jest
-        .fn()
-        .mockImplementation(() =>
-          Promise.resolve(new RegisteredCommentReply(userId, useCasePayload)),
-        )
+      mockThreadRepository.verifyAvailableThread = jest.fn(() =>
+        Promise.resolve(),
+      )
+      mockCommentRepository.verifyAvailableComment = jest.fn(() =>
+        Promise.resolve(),
+      )
+      mockCommentReplyRepository.addCommentReply = jest.fn(() =>
+        Promise.resolve(new RegisteredCommentReply(userId, useCasePayload)),
+      )
 
       /** creating use case instance */
       const commentReplyUseCase = new CommentReplyUseCase({
@@ -89,21 +87,21 @@ describe('CommentReplyUseCase', () => {
       const mockCommentReplyRepository = new CommentReplyRepository()
 
       /** mocking needed function */
-      mockThreadRepository.verifyAvailableThread = jest
-        .fn()
-        .mockImplementation(() => Promise.resolve())
-      mockCommentRepository.verifyAvailableComment = jest
-        .fn()
-        .mockImplementation(() => Promise.resolve())
-      mockCommentReplyRepository.verifyAvailableCommentReply = jest
-        .fn()
-        .mockImplementation(() => Promise.resolve())
-      mockCommentReplyRepository.verifyCommentReplyOwner = jest
-        .fn()
-        .mockImplementation(() => Promise.resolve())
-      mockCommentReplyRepository.deleteCommentReply = jest
-        .fn()
-        .mockImplementation(() => Promise.resolve(replyId))
+      mockThreadRepository.verifyAvailableThread = jest.fn(() =>
+        Promise.resolve(),
+      )
+      mockCommentRepository.verifyAvailableComment = jest.fn(() =>
+        Promise.resolve(),
+      )
+      mockCommentReplyRepository.verifyAvailableCommentReply = jest.fn(() =>
+        Promise.resolve(),
+      )
+      mockCommentReplyRepository.verifyCommentReplyOwner = jest.fn(() =>
+        Promise.resolve(),
+      )
+      mockCommentReplyRepository.deleteCommentReply = jest.fn(() =>
+        Promise.resolve(replyId),
+      )
 
       /** creating use case instance */
       const commentReplyUseCase = new CommentReplyUseCase({

@@ -4,7 +4,11 @@ class DetailedThread {
 
     const _comments = this._combineCommmentsAndReplies({ comments, replies })
     this.thread = {
-      ...thread,
+      id: thread.id,
+      title: thread.title,
+      body: thread.body,
+      date: thread.created_at,
+      username: thread.username,
       comments: _comments,
     }
   }
@@ -12,11 +16,11 @@ class DetailedThread {
   _combineCommmentsAndReplies({ comments, replies }) {
     return comments.map((comment) => {
       const _commentReply = replies
-        .filter((r) => r.commentId === comment.id)
+        .filter((r) => r.comment_id === comment.id)
         .map((reply) => ({
           id: reply.id,
           username: reply.username,
-          date: reply.date,
+          date: reply.created_at,
           content: reply.is_delete
             ? '**balasan telah dihapus**'
             : reply.content,
@@ -25,7 +29,7 @@ class DetailedThread {
       return {
         id: comment.id,
         username: comment.username,
-        date: comment.date,
+        date: comment.created_at,
         content: comment.is_delete
           ? '**komentar telah dihapus**'
           : comment.content,
@@ -40,7 +44,7 @@ class DetailedThread {
       !thread.id ||
       !thread.title ||
       !thread.body ||
-      !thread.date ||
+      !thread.created_at ||
       !thread.username
     ) {
       return true
@@ -50,7 +54,7 @@ class DetailedThread {
         !comments[0].id ||
         !comments[0].username ||
         comments[0].is_delete === undefined ||
-        !comments[0].date ||
+        !comments[0].created_at ||
         !comments[0].content
       ) {
         return true
@@ -59,10 +63,10 @@ class DetailedThread {
     if (replies.length) {
       if (
         !replies[0].id ||
-        !replies[0].commentId ||
+        !replies[0].comment_id ||
         !replies[0].username ||
         replies[0].is_delete === undefined ||
-        !replies[0].date ||
+        !replies[0].created_at ||
         !replies[0].content
       ) {
         return true
@@ -78,7 +82,7 @@ class DetailedThread {
       typeof thread.id !== 'string' ||
       typeof thread.title !== 'string' ||
       typeof thread.body !== 'string' ||
-      !(thread.date instanceof Date) ||
+      !(thread.created_at instanceof Date) ||
       typeof thread.username !== 'string'
     ) {
       return true
@@ -88,7 +92,7 @@ class DetailedThread {
         typeof comments[0].id !== 'string' ||
         typeof comments[0].username !== 'string' ||
         typeof comments[0].is_delete !== 'boolean' ||
-        !(comments[0].date instanceof Date) ||
+        !(comments[0].created_at instanceof Date) ||
         typeof comments[0].content !== 'string'
       ) {
         return true
@@ -97,10 +101,10 @@ class DetailedThread {
     if (replies.length) {
       if (
         typeof replies[0].id !== 'string' ||
-        typeof replies[0].commentId !== 'string' ||
+        typeof replies[0].comment_id !== 'string' ||
         typeof replies[0].username !== 'string' ||
         typeof replies[0].is_delete !== 'boolean' ||
-        !(replies[0].date instanceof Date) ||
+        !(replies[0].created_at instanceof Date) ||
         typeof replies[0].content !== 'string'
       ) {
         return true

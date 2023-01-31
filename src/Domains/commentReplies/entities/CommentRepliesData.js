@@ -1,0 +1,55 @@
+class CommentRepliesData {
+  constructor(payload) {
+    this._verifyPayload(payload)
+
+    const { replies } = payload
+
+    this.replies = this._mapReplies(replies)
+  }
+
+  _verifyPayload(payload) {
+    if (!payload || !payload.replies) {
+      throw new Error('COMMENT_REPLIES_DATA.NOT_CONTAIN_NEEDED_PROPERTY')
+    }
+    const { replies } = payload
+
+    if (!Array.isArray(replies)) {
+      throw new Error('COMMENT_REPLIES_DATA.NOT_MEET_DATA_TYPE_SPECIFICATION')
+    }
+
+    replies.forEach((r) => {
+      if (
+        r.id === undefined ||
+        r.commentId === undefined ||
+        r.username === undefined ||
+        r.date === undefined ||
+        r.content === undefined ||
+        r.is_delete === undefined
+      ) {
+        throw new Error('COMMENT_REPLIES_DATA.NOT_CONTAIN_NEEDED_PROPERTY')
+      }
+
+      if (
+        typeof r.id !== 'string' ||
+        typeof r.commentId !== 'string' ||
+        typeof r.username !== 'string' ||
+        !(r.date instanceof Date) ||
+        typeof r.content !== 'string' ||
+        typeof r.is_delete !== 'boolean'
+      ) {
+        throw new Error('COMMENT_REPLIES_DATA.NOT_MEET_DATA_TYPE_SPECIFICATION')
+      }
+    })
+  }
+
+  _mapReplies(replies) {
+    return replies.map((r) => ({
+      id: r.id,
+      username: r.username,
+      date: r.date,
+      content: r.is_delete ? '**balasan telah dihapus**' : r.content,
+    }))
+  }
+}
+
+module.exports = CommentRepliesData

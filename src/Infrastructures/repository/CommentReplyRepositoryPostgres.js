@@ -61,6 +61,20 @@ class CommentReplyRepositoryPostgres extends CommentReplyRepository {
 
     return result.rows[0]?.id
   }
+
+  async getCommentRepliesByCommentIds(commentIds) {
+    const query = {
+      text: `SELECT cr.*, u.username FROM comment_replies cr
+          INNER JOIN users u ON u.id = cr.user_id
+          WHERE cr.comment_id = ANY($1::text[])
+          ORDER BY cr.created_at ASC;`,
+      values: [commentIds],
+    }
+
+    const result = await this._pool.query(query)
+
+    return result.rows
+  }
 }
 
 module.exports = CommentReplyRepositoryPostgres

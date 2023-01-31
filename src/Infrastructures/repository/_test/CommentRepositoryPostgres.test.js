@@ -181,4 +181,50 @@ describe('CommentRepository postgres', () => {
       expect(deletedComment[0].is_delete).toEqual(true)
     })
   })
+
+  describe('getCommentRepliesByCommentIds Function', () => {
+    const _comment = {
+      id: 'comment-123',
+      user_id: 'user-123',
+      thread_id: 'thread-123',
+      username: 'dicoding',
+      date: new Date(),
+      content: 'content comment',
+      is_delete: false,
+    }
+
+    beforeAll(async () => {
+      await ThreadsTableTestHelper.addThread({})
+    })
+
+    it('should get comment replies data by commentIds correctly', async () => {
+      // Arrange
+      const fakeIdGenerator = () => '123' // stub!
+      const commentRepository = new CommentRepositoryPostgres(
+        pool,
+        fakeIdGenerator,
+      )
+      const expectedComments = [
+        {
+          id: _comment.id,
+          thread_id: _comment.thread_id,
+          user_id: _comment.user_id,
+          username: _comment.username,
+          created_at: _comment.date,
+          content: _comment.content,
+          is_delete: _comment.is_delete,
+        },
+      ]
+
+      // Action
+      await CommentsTableTestHelper.addComment(_comment)
+      const commentsData = await commentRepository.getCommentsByThreadId(
+        _comment.thread_id,
+      )
+
+      // Assert
+      expect(commentsData).toHaveLength(1)
+      expect(commentsData).toStrictEqual(expectedComments)
+    })
+  })
 })

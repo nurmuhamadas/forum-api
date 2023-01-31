@@ -3,6 +3,9 @@ const RegisteredThread = require('../../../Domains/threads/entities/RegisteredTh
 const RegisterThread = require('../../../Domains/threads/entities/RegisterThread')
 const ThreadRepository = require('../../../Domains/threads/ThreadRepository')
 const DetailedThread = require('../../../Domains/threads/entities/DetailedThread')
+const NotFoundError = require('../../../Commons/exceptions/NotFoundError')
+const CommentRepository = require('../../../Domains/comments/CommentRepository')
+const CommentReplyRepository = require('../../../Domains/commentReplies/CommentReplyRepository')
 
 describe('ThreadUseCase', () => {
   describe('AddThread', () => {
@@ -23,11 +26,9 @@ describe('ThreadUseCase', () => {
       const mockThreadRepository = new ThreadRepository()
 
       /** mocking needed function */
-      mockThreadRepository.addThread = jest
-        .fn()
-        .mockImplementation(() =>
-          Promise.resolve(new RegisteredThread(userId, useCasePayload)),
-        )
+      mockThreadRepository.addThread = jest.fn(() =>
+        Promise.resolve(new RegisteredThread(userId, useCasePayload)),
+      )
 
       /** creating use case instance */
       const getThreadUseCase = new ThreadUseCase({
@@ -52,30 +53,70 @@ describe('ThreadUseCase', () => {
   })
 
   describe('GetThread', () => {
+    it('should throw error when no threadId given', () => {
+      /** creating dependency of use case */
+      const threadUseCase = new ThreadUseCase({})
+
+      // action and assert
+      expect(threadUseCase.getThread()).rejects.toThrowError(
+        'THREAD_USE_CASE.NOT_CONTAIN_NEEDED_PROPERTY',
+      )
+    })
+
+    it('should throw error when threadId is not string', () => {
+      /** creating dependency of use case */
+      const threadUseCase = new ThreadUseCase({})
+
+      // action and assert
+      expect(threadUseCase.getThread(123)).rejects.toThrowError(
+        'THREAD_USE_CASE.NOT_MEET_DATA_SPECIFICATION',
+      )
+    })
+
+    it('should throw NotFound Error if thread is not exist', () => {
+      /** creating dependency of use case */
+      const mockThreadRepository = new ThreadRepository()
+      /** mocking needed function */
+      mockThreadRepository.verifyAvailableThread = jest.fn(() =>
+        Promise.reject(new NotFoundError('THREAD_USE_CASE.THREAD_NOT_FOUND')),
+      )
+
+      /** creating dependency of use case */
+      const threadUseCase = new ThreadUseCase({
+        threadRepository: mockThreadRepository,
+      })
+
+      // action and assert
+      expect(threadUseCase.getThread('123')).rejects.toThrowError(
+        'THREAD_USE_CASE.THREAD_NOT_FOUND',
+      )
+    })
+
     it('should orchestrating the get thread action correctly', async () => {
       // Arrange
       const threadData = {
         id: 'thread-h_2FkLZhtgBKY2kh4CC02',
         title: 'sebuah thread',
         body: 'sebuah body thread',
-        date: new Date(),
+        created_at: new Date(),
         username: 'dicoding',
       }
       const commentData = [
         {
           id: 'comment-_pby2_tmXV6bcvcdev8xk',
           username: 'dicoding',
-          date: new Date(),
+          created_at: new Date(),
           content: 'sebuah comment',
           is_delete: false,
         },
       ]
+      const commentIds = commentData.map((c) => c.id)
       const commentReplies = [
         {
           id: 'reply-_pby2_tmXV6bcvcdev8xk',
-          commentId: 'comment-_pby2_tmXV6bcvcdev8xk',
+          comment_id: 'comment-_pby2_tmXV6bcvcdev8xk',
           username: 'dicoding',
-          date: new Date(),
+          created_at: new Date(),
           content: 'sebuah balasan komentar',
           is_delete: false,
         },
@@ -88,21 +129,27 @@ describe('ThreadUseCase', () => {
 
       /** creating dependency of use case */
       const mockThreadRepository = new ThreadRepository()
+      const mockCommentRepository = new CommentRepository()
+      const mockReplyRepository = new CommentReplyRepository()
       /** mocking needed function */
-      mockThreadRepository.verifyAvailableThread = jest
-        .fn()
-        .mockImplementation(() => Promise.resolve())
-      mockThreadRepository.getThread = jest
-        .fn()
-        .mockImplementation(() =>
-          Promise.resolve(
-            new DetailedThread(threadData, commentData, commentReplies),
-          ),
-        )
+      mockThreadRepository.verifyAvailableThread = jest.fn(() =>
+        Promise.resolve(),
+      )
+      mockThreadRepository.getThread = jest.fn(() =>
+        Promise.resolve(threadData),
+      )
+      mockCommentRepository.getCommentsByThreadId = jest.fn(() =>
+        Promise.resolve(commentData),
+      )
+      mockReplyRepository.getCommentRepliesByCommentIds = jest.fn(() =>
+        Promise.resolve(commentReplies),
+      )
 
       /** creating use case instance */
       const getThreadUseCase = new ThreadUseCase({
         threadRepository: mockThreadRepository,
+        commentRepository: mockCommentRepository,
+        repliesRepository: mockReplyRepository,
       })
 
       // Action
@@ -114,6 +161,12 @@ describe('ThreadUseCase', () => {
         threadData.id,
       )
       expect(mockThreadRepository.getThread).toBeCalledWith(threadData.id)
+      expect(mockCommentRepository.getCommentsByThreadId).toBeCalledWith(
+        threadData.id,
+      )
+      expect(mockReplyRepository.getCommentRepliesByCommentIds).toBeCalledWith(
+        commentIds,
+      )
     })
   })
 })

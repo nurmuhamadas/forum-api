@@ -28,18 +28,24 @@ describe('CommentReplyRepository postgres', () => {
   describe('verifyAvailableCommentReply function', () => {
     it('should throw NotFoundError if comment reply is not found', async () => {
       // Arrange
-      const threadRepository = new CommentReplyRepositoryPostgres(pool, {})
+      const commentReplyRepository = new CommentReplyRepositoryPostgres(
+        pool,
+        {},
+      )
       const replyId = 'reply'
 
       // Action and Assert
       await expect(
-        threadRepository.verifyAvailableCommentReply(replyId),
+        commentReplyRepository.verifyAvailableCommentReply(replyId),
       ).rejects.toThrowError(NotFoundError)
     })
 
     it('should not throw NotFoundError if comment is exist', async () => {
       // Arrange
-      const threadRepository = new CommentReplyRepositoryPostgres(pool, {})
+      const commentReplyRepository = new CommentReplyRepositoryPostgres(
+        pool,
+        {},
+      )
       const threadId = 'thread-123'
       const commentId = 'comment-123'
       const replyId = 'reply-123'
@@ -49,7 +55,7 @@ describe('CommentReplyRepository postgres', () => {
       await CommentsTableTestHelper.addComment({ id: commentId })
       await CommentRepliesTableTestHelper.addCommentReply({ id: replyId })
       await expect(
-        threadRepository.verifyAvailableCommentReply(replyId),
+        commentReplyRepository.verifyAvailableCommentReply(replyId),
       ).resolves.not.toThrowError(NotFoundError)
     })
   })
@@ -57,7 +63,10 @@ describe('CommentReplyRepository postgres', () => {
   describe('verifyCommentReplyOwner function', () => {
     it('should throw AuthorizationError if user is not owner of the comment reply', async () => {
       // Arrange
-      const threadRepository = new CommentReplyRepositoryPostgres(pool, {})
+      const commentReplyRepository = new CommentReplyRepositoryPostgres(
+        pool,
+        {},
+      )
       const firstUserId = 'user-123'
       const secondUserId = 'user-321'
       const replyId = 'reply-123'
@@ -75,7 +84,7 @@ describe('CommentReplyRepository postgres', () => {
 
       // Assert
       await expect(
-        threadRepository.verifyCommentReplyOwner(secondUserId, replyId),
+        commentReplyRepository.verifyCommentReplyOwner(secondUserId, replyId),
       ).rejects.toThrowError(AuthorizationError)
 
       UsersTableTestHelper.deleteUser(secondUserId)
@@ -85,14 +94,17 @@ describe('CommentReplyRepository postgres', () => {
       // Arrange
       const userId = 'user-123'
       const replyId = 'reply-123'
-      const threadRepository = new CommentReplyRepositoryPostgres(pool, {})
+      const commentReplyRepository = new CommentReplyRepositoryPostgres(
+        pool,
+        {},
+      )
 
       // Action and Assert
       await ThreadsTableTestHelper.addThread({})
       await CommentsTableTestHelper.addComment({})
       await CommentRepliesTableTestHelper.addCommentReply({ userId })
       await expect(
-        threadRepository.verifyCommentReplyOwner(userId, replyId),
+        commentReplyRepository.verifyCommentReplyOwner(userId, replyId),
       ).resolves.not.toThrowError(AuthorizationError)
     })
   })
@@ -103,10 +115,10 @@ describe('CommentReplyRepository postgres', () => {
       await CommentsTableTestHelper.addComment({})
     })
 
-    it('should add comment relpy to database', async () => {
+    it('should add comment reply to database', async () => {
       // Arrange
       const fakeIdGenerator = () => '123' // stub!
-      const threadRepository = new CommentReplyRepositoryPostgres(
+      const commentReplyRepository = new CommentReplyRepositoryPostgres(
         pool,
         fakeIdGenerator,
       )
@@ -128,9 +140,8 @@ describe('CommentReplyRepository postgres', () => {
       )
 
       // Action
-      const registeredCommentReply = await threadRepository.addCommentReply(
-        registerCommentReply,
-      )
+      const registeredCommentReply =
+        await commentReplyRepository.addCommentReply(registerCommentReply)
 
       // Assert
       const thread = await CommentRepliesTableTestHelper.findCommentReplyById(
@@ -140,6 +151,91 @@ describe('CommentReplyRepository postgres', () => {
         expectedRegisteredCommentReply,
       )
       expect(thread).toHaveLength(1)
+    })
+  })
+
+  describe('getCommentRepliesByCommentIds Function', () => {
+    const _reply = {
+      id: 'reply-123',
+      user_id: 'user-123',
+      comment_id: 'comment-123',
+      username: 'dicoding',
+      date: new Date(),
+      content: '',
+      is_delete: false,
+    }
+
+    beforeAll(async () => {
+      await ThreadsTableTestHelper.addThread({})
+      await CommentsTableTestHelper.addComment({})
+    })
+
+    it('should get comment replies data by commentIds correctly', async () => {
+      // Arrange
+      const fakeIdGenerator = () => '123' // stub!
+      const commentReplyRepository = new CommentReplyRepositoryPostgres(
+        pool,
+        fakeIdGenerator,
+      )
+      const commentIds = [_reply.comment_id]
+      const expectedCommentReplies = [
+        {
+          id: _reply.id,
+          comment_id: _reply.comment_id,
+          user_id: _reply.user_id,
+          username: _reply.username,
+          created_at: _reply.date,
+          content: _reply.content,
+          is_delete: _reply.is_delete,
+        },
+      ]
+
+      // Action
+      await CommentRepliesTableTestHelper.addCommentReply(_reply)
+      const repliesData =
+        await commentReplyRepository.getCommentRepliesByCommentIds(commentIds)
+
+      // Assert
+      expect(repliesData).toHaveLength(1)
+      expect(repliesData).toStrictEqual(expectedCommentReplies)
+    })
+  })
+
+  describe('deleteCommentReply Function', () => {
+    const _reply = {
+      id: 'reply-123',
+      user_id: 'user-123',
+      comment_id: 'comment-123',
+      username: 'dicoding',
+      date: new Date(),
+      content: '',
+      is_delete: false,
+    }
+
+    beforeAll(async () => {
+      await ThreadsTableTestHelper.addThread({})
+      await CommentsTableTestHelper.addComment({})
+      await CommentRepliesTableTestHelper.addCommentReply({})
+    })
+
+    it('should soft delete comment', async () => {
+      // Arrange
+      const fakeIdGenerator = () => '123' // stub!
+      const commentReplyRepository = new CommentReplyRepositoryPostgres(
+        pool,
+        fakeIdGenerator,
+      )
+      const replyId = 'reply-123'
+
+      // Action
+      const deletedCommentReplyId =
+        await commentReplyRepository.deleteCommentReply(replyId)
+      const deletedCommentReply =
+        await CommentRepliesTableTestHelper.findCommentReplyById(replyId)
+
+      // Assert
+      expect(deletedCommentReplyId).toEqual(replyId)
+      expect(deletedCommentReply[0].is_delete).toEqual(true)
     })
   })
 })

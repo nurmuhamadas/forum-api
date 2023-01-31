@@ -62,6 +62,21 @@ DomainErrorTranslator._directories = {
     new InvariantError(
       'tidak dapat membuat balasan komentar baru karena tipe data tidak sesuai',
     ),
+
+  'DETAILED_THREAD.REPLY.NOT_CONTAIN_NEEDED_PROPERTY': new InvariantError(
+    'tidak dapat mengambil detail thread karena properti yang dibutuhkan tidak lengkap',
+  ),
+  'DETAILED_THREAD.REPLY.NOT_MEET_DATA_TYPE_SPECIFICATION': new InvariantError(
+    'tidak dapat mengambil detail thread karena tipe data tidak sesuai',
+  ),
+
+  'COMMENT_REPLIES_DATA.REPLY.NOT_CONTAIN_NEEDED_PROPERTY': new InvariantError(
+    'tidak dapat mengambil balasan komentar karena properti yang dibutuhkan tidak lengkap',
+  ),
+  'COMMENT_REPLIES_DATA.REPLY.NOT_MEET_DATA_TYPE_SPECIFICATION':
+    new InvariantError(
+      'tidak dapat mengambil balasan komentar karena tipe data tidak sesuai',
+    ),
 }
 
 module.exports = DomainErrorTranslator

@@ -14,6 +14,10 @@ class CommentReplyRepository {
   async deleteCommentReply(userid) {
     throw new Error('THREAD_REPOSITORY.METHOD_NOT_IMPLEMENTED')
   }
+
+  async getCommentRepliesByCommentIds(commentIds) {
+    throw new Error('THREAD_REPOSITORY.METHOD_NOT_IMPLEMENTED')
+  }
 }
 
 module.exports = CommentReplyRepository
