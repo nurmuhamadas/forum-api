@@ -8,18 +8,18 @@ describe('CommentReplyRepository interface', () => {
     // Action and Assert
     await expect(
       commentReplyRepository.verifyAvailableCommentReply(1),
-    ).rejects.toThrowError('THREAD_REPOSITORY.METHOD_NOT_IMPLEMENTED')
+    ).rejects.toThrowError('REPLY_REPOSITORY.METHOD_NOT_IMPLEMENTED')
     await expect(
       commentReplyRepository.verifyCommentReplyOwner(1, 1),
-    ).rejects.toThrowError('THREAD_REPOSITORY.METHOD_NOT_IMPLEMENTED')
+    ).rejects.toThrowError('REPLY_REPOSITORY.METHOD_NOT_IMPLEMENTED')
     await expect(
       commentReplyRepository.addCommentReply({}),
-    ).rejects.toThrowError('THREAD_REPOSITORY.METHOD_NOT_IMPLEMENTED')
+    ).rejects.toThrowError('REPLY_REPOSITORY.METHOD_NOT_IMPLEMENTED')
     await expect(
       commentReplyRepository.deleteCommentReply(1),
-    ).rejects.toThrowError('THREAD_REPOSITORY.METHOD_NOT_IMPLEMENTED')
+    ).rejects.toThrowError('REPLY_REPOSITORY.METHOD_NOT_IMPLEMENTED')
     await expect(
       commentReplyRepository.getCommentRepliesByCommentIds([]),
-    ).rejects.toThrowError('THREAD_REPOSITORY.METHOD_NOT_IMPLEMENTED')
+    ).rejects.toThrowError('REPLY_REPOSITORY.METHOD_NOT_IMPLEMENTED')
   })
 })

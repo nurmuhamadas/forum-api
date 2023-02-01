@@ -29,17 +29,21 @@ class ThreadUseCase {
     const thread = await this._threadRepository.getThread(threadId)
 
     // comment data
-    const comments = await this._commentRepository.getCommentsByThreadId(
+    const commentsData = await this._commentRepository.getCommentsByThreadId(
       threadId,
     )
-    const commentIds = comments.map((c) => c.id)
+    const commentIds = commentsData.map((c) => c.id)
 
     // replies data
     const replies = await this._repliesRepository.getCommentRepliesByCommentIds(
       commentIds,
     )
+    const comments = new CommentsData({
+      comments: commentsData,
+      replies,
+    })
 
-    return new DetailedThread(thread, comments, replies)
+    return new DetailedThread(thread, comments)
   }
 }
 
