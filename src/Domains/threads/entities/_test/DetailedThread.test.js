@@ -1,3 +1,4 @@
+const CommentsData = require('../../../comments/entities/CommentsData')
 const DetailedThread = require('../DetailedThread')
 
 describe('a DetailedThread entities', () => {
@@ -10,90 +11,61 @@ describe('a DetailedThread entities', () => {
 
   it('should throw error when thread payload did not contain needed property', () => {
     // Arrange
+    const date = new Date()
     const threadData = {
       id: 'thread-h_2FkLZhtgBKY2kh4CC02',
-      username: 'dicoding',
-    }
-    const commentData = [
-      {
-        id: 'comment-_pby2_tmXV6bcvcdev8xk',
-        content: 'sebuah comment',
-      },
-    ]
-    const commentReplies = [
-      {
-        id: 'reply-_pby2_tmXV6bcvcdev8xk',
-        comment_id: 'comment-_pby2_tmXV6bcvcdev8xk',
-      },
-    ]
-
-    // Action and Assert
-    expect(
-      () => new DetailedThread(threadData, commentData, commentReplies),
-    ).toThrowError('DETAILED_THREAD.NOT_CONTAIN_NEEDED_PROPERTY')
-  })
-
-  it('should throw error when comment payload did not contain needed property', () => {
-    // Arrange
-    const threadData = {
-      id: 'thread-h_2FkLZhtgBKY2kh4CC02',
-      title: 'sebuah thread',
-      body: 'sebuah body thread',
-      created_at: new Date(),
-      username: 'dicoding',
-    }
-    const commentData = [
-      {
-        id: 'comment-_pby2_tmXV6bcvcdev8xk',
-        content: 'sebuah comment',
-      },
-    ]
-    const commentReplies = [
-      {
-        id: 'reply-_pby2_tmXV6bcvcdev8xk',
-        comment_id: 'comment-_pby2_tmXV6bcvcdev8xk',
-      },
-    ]
-
-    // Action and Assert
-    expect(
-      () => new DetailedThread(threadData, commentData, commentReplies),
-    ).toThrowError('DETAILED_THREAD.NOT_CONTAIN_NEEDED_PROPERTY')
-  })
-
-  it('should throw error when comment reply payload did not contain needed property', () => {
-    // Arrange
-    const threadData = {
-      id: 'thread-h_2FkLZhtgBKY2kh4CC02',
-      title: 'sebuah thread',
-      body: 'sebuah body thread',
-      created_at: new Date(),
       username: 'dicoding',
     }
     const commentData = [
       {
         id: 'comment-_pby2_tmXV6bcvcdev8xk',
         username: 'dicoding',
-        created_at: new Date(),
+        created_at: date,
         content: 'sebuah comment',
-        is_delete: false,
+        is_delete: true,
       },
     ]
     const commentReplies = [
       {
         id: 'reply-_pby2_tmXV6bcvcdev8xk',
         comment_id: 'comment-_pby2_tmXV6bcvcdev8xk',
+        username: 'dicoding',
+        created_at: date,
+        content: 'sebuah balasan komentar',
+        is_delete: true,
       },
     ]
 
+    const comments = new CommentsData({
+      comments: commentData,
+      replies: commentReplies,
+    })
+
     // Action and Assert
-    expect(
-      () => new DetailedThread(threadData, commentData, commentReplies),
-    ).toThrowError('DETAILED_THREAD.NOT_CONTAIN_NEEDED_PROPERTY')
+    expect(() => new DetailedThread(threadData, comments)).toThrowError(
+      'DETAILED_THREAD.NOT_CONTAIN_NEEDED_PROPERTY',
+    )
+  })
+
+  it('should throw error when comment payload is undefined', () => {
+    // Arrange
+    const threadData = {
+      id: 'thread-h_2FkLZhtgBKY2kh4CC02',
+      title: 'sebuah thread',
+      body: 'sebuah body thread',
+      created_at: new Date(),
+      username: 'dicoding',
+    }
+
+    // Action and Assert
+    expect(() => new DetailedThread(threadData)).toThrowError(
+      'DETAILED_THREAD.NOT_CONTAIN_NEEDED_PROPERTY',
+    )
   })
 
   it('should throw error when thread payload did not meet data type specification', () => {
     // Arrange
+    const date = new Date()
     const threadData = {
       id: true,
       title: 123,
@@ -103,66 +75,36 @@ describe('a DetailedThread entities', () => {
     }
     const commentData = [
       {
-        id: true,
-        username: 123,
-        created_at: { a: 'a' },
+        id: 'comment-_pby2_tmXV6bcvcdev8xk',
+        username: 'dicoding',
+        created_at: date,
         content: 'sebuah comment',
-        is_delete: false,
+        is_delete: true,
       },
     ]
     const commentReplies = [
       {
-        id: true,
-        comment_id: {},
-        username: 123,
-        created_at: 'new Date()',
-        content: true,
-        is_delete: 'false',
+        id: 'reply-_pby2_tmXV6bcvcdev8xk',
+        comment_id: 'comment-_pby2_tmXV6bcvcdev8xk',
+        username: 'dicoding',
+        created_at: date,
+        content: 'sebuah balasan komentar',
+        is_delete: true,
       },
     ]
+
+    const comments = new CommentsData({
+      comments: commentData,
+      replies: commentReplies,
+    })
 
     // Action and Assert
-    expect(
-      () => new DetailedThread(threadData, commentData, commentReplies),
-    ).toThrowError('DETAILED_THREAD.NOT_MEET_DATA_TYPE_SPECIFICATION')
+    expect(() => new DetailedThread(threadData, comments)).toThrowError(
+      'DETAILED_THREAD.NOT_MEET_DATA_TYPE_SPECIFICATION',
+    )
   })
 
-  it('should throw error when comment payload did not meet data type specification', () => {
-    // Arrange
-    const threadData = {
-      id: 'thread-h_2FkLZhtgBKY2kh4CC02',
-      title: 'sebuah thread',
-      body: 'sebuah body thread',
-      created_at: new Date(),
-      username: 'dicoding',
-    }
-    const commentData = [
-      {
-        id: true,
-        username: 123,
-        created_at: { a: 'a' },
-        content: 'sebuah comment',
-        is_delete: false,
-      },
-    ]
-    const commentReplies = [
-      {
-        id: true,
-        comment_id: {},
-        username: 123,
-        created_at: 'new Date()',
-        content: true,
-        is_delete: 'false',
-      },
-    ]
-
-    // Action and Assert
-    expect(
-      () => new DetailedThread(threadData, commentData, commentReplies),
-    ).toThrowError('DETAILED_THREAD.NOT_MEET_DATA_TYPE_SPECIFICATION')
-  })
-
-  it('should throw error when comment reply payload did not meet data type specification', () => {
+  it('should throw error when comment payload is not instance of CommentsData Entities', () => {
     // Arrange
     const threadData = {
       id: 'thread-h_2FkLZhtgBKY2kh4CC02',
@@ -177,24 +119,14 @@ describe('a DetailedThread entities', () => {
         username: 'dicoding',
         created_at: new Date(),
         content: 'sebuah comment',
-        is_delete: false,
-      },
-    ]
-    const commentReplies = [
-      {
-        id: true,
-        comment_id: {},
-        username: 123,
-        created_at: 'new Date()',
-        content: true,
-        is_delete: 'false',
+        is_delete: true,
       },
     ]
 
     // Action and Assert
-    expect(
-      () => new DetailedThread(threadData, commentData, commentReplies),
-    ).toThrowError('DETAILED_THREAD.NOT_MEET_DATA_TYPE_SPECIFICATION')
+    expect(() => new DetailedThread(threadData, commentData)).toThrowError(
+      'DETAILED_THREAD.NOT_MEET_DATA_TYPE_SPECIFICATION',
+    )
   })
 
   it('should create DetailedThread object correctly', () => {
@@ -217,14 +149,6 @@ describe('a DetailedThread entities', () => {
         is_delete: false,
       },
     ]
-    const expectedCommentReplies = [
-      {
-        id: 'reply-_pby2_tmXV6bcvcdev8xk',
-        username: 'dicoding',
-        date,
-        content: 'sebuah balasan komentar',
-      },
-    ]
     const commentData = [
       {
         id: 'comment-_pby2_tmXV6bcvcdev8xk',
@@ -234,30 +158,26 @@ describe('a DetailedThread entities', () => {
         is_delete: false,
       },
     ]
-    const expectedCommentData = [
-      {
-        id: 'comment-_pby2_tmXV6bcvcdev8xk',
-        username: 'dicoding',
-        date,
-        content: 'sebuah comment',
-        replies: expectedCommentReplies,
-      },
-    ]
+    const comments = new CommentsData({
+      comments: commentData,
+      replies: commentReplies,
+    })
+
+    const expectedCommentData = new CommentsData({
+      comments: commentData,
+      replies: commentReplies,
+    })
     const expectedThreadData = {
       id: threadData.id,
       title: threadData.title,
       body: threadData.body,
       date: threadData.created_at,
       username: threadData.username,
-      comments: expectedCommentData,
+      comments: expectedCommentData.comments,
     }
 
     // Action
-    const { thread } = new DetailedThread(
-      threadData,
-      commentData,
-      commentReplies,
-    )
+    const { thread } = new DetailedThread(threadData, comments)
 
     // Assert
     expect(thread).toStrictEqual(expectedThreadData)
@@ -283,14 +203,6 @@ describe('a DetailedThread entities', () => {
         is_delete: true,
       },
     ]
-    const expectedCommentReplies = [
-      {
-        id: 'reply-_pby2_tmXV6bcvcdev8xk',
-        username: 'dicoding',
-        date,
-        content: '**balasan telah dihapus**',
-      },
-    ]
     const commentData = [
       {
         id: 'comment-_pby2_tmXV6bcvcdev8xk',
@@ -300,30 +212,26 @@ describe('a DetailedThread entities', () => {
         is_delete: true,
       },
     ]
-    const expectedCommentData = [
-      {
-        id: 'comment-_pby2_tmXV6bcvcdev8xk',
-        username: 'dicoding',
-        date,
-        content: '**komentar telah dihapus**',
-        replies: expectedCommentReplies,
-      },
-    ]
+    const comments = new CommentsData({
+      comments: commentData,
+      replies: commentReplies,
+    })
+
+    const expectedCommentData = new CommentsData({
+      comments: commentData,
+      replies: commentReplies,
+    })
     const expectedThreadData = {
       id: threadData.id,
       title: threadData.title,
       body: threadData.body,
       date: threadData.created_at,
       username: threadData.username,
-      comments: expectedCommentData,
+      comments: expectedCommentData.comments,
     }
 
     // Action
-    const { thread } = new DetailedThread(
-      threadData,
-      commentData,
-      commentReplies,
-    )
+    const { thread } = new DetailedThread(threadData, comments)
 
     // Assert
     expect(thread).toStrictEqual(expectedThreadData)
@@ -347,9 +255,13 @@ describe('a DetailedThread entities', () => {
       username: threadData.username,
       comments: [],
     }
+    const comments = new CommentsData({
+      comments: [],
+      replies: [],
+    })
 
     // Action
-    const { thread } = new DetailedThread(threadData, [], [])
+    const { thread } = new DetailedThread(threadData, comments)
 
     // Assert
     expect(thread).toStrictEqual(expectedThreadData)

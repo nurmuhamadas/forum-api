@@ -16,9 +16,9 @@ describe('a CommentRepliesData entities', () => {
     const commentReplies = [
       {
         id: 'reply-_pby2_tmXV6bcvcdev8xk',
-        commentId: 'comment-_pby2_tmXV6bcvcdev8xk',
+        comment_id: 'comment-_pby2_tmXV6bcvcdev8xk',
         username: 'dicoding',
-        date: new Date(),
+        created_at: new Date(),
       },
     ]
 
@@ -40,9 +40,9 @@ describe('a CommentRepliesData entities', () => {
     const commentReplies = [
       {
         id: true,
-        commentId: {},
+        comment_id: {},
         username: 123,
-        date: 'new Date()',
+        created_at: 'new Date()',
         content: true,
         is_delete: 'false',
       },
@@ -60,9 +60,9 @@ describe('a CommentRepliesData entities', () => {
     const commentReplies = [
       {
         id: 'reply-_pby2_tmXV6bcvcdev8xk',
-        commentId: 'comment-_pby2_tmXV6bcvcdev8xk',
+        comment_id: 'comment-_pby2_tmXV6bcvcdev8xk',
         username: 'dicoding',
-        date,
+        created_at: date,
         content: 'sebuah balasan komentar',
         is_delete: false,
       },
@@ -91,9 +91,9 @@ describe('a CommentRepliesData entities', () => {
     const commentReplies = [
       {
         id: 'reply-_pby2_tmXV6bcvcdev8xk',
-        commentId: 'comment-_pby2_tmXV6bcvcdev8xk',
+        comment_id: 'comment-_pby2_tmXV6bcvcdev8xk',
         username: 'dicoding',
-        date,
+        created_at: date,
         content: 'sebuah balasan komentar',
         is_delete: true,
       },

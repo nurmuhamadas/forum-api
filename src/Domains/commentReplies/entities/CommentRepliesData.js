@@ -20,9 +20,9 @@ class CommentRepliesData {
     replies.forEach((r) => {
       if (
         r.id === undefined ||
-        r.commentId === undefined ||
+        r.comment_id === undefined ||
         r.username === undefined ||
-        r.date === undefined ||
+        r.created_at === undefined ||
         r.content === undefined ||
         r.is_delete === undefined
       ) {
@@ -31,9 +31,9 @@ class CommentRepliesData {
 
       if (
         typeof r.id !== 'string' ||
-        typeof r.commentId !== 'string' ||
+        typeof r.comment_id !== 'string' ||
         typeof r.username !== 'string' ||
-        !(r.date instanceof Date) ||
+        !(r.created_at instanceof Date) ||
         typeof r.content !== 'string' ||
         typeof r.is_delete !== 'boolean'
       ) {
@@ -46,7 +46,7 @@ class CommentRepliesData {
     return replies.map((r) => ({
       id: r.id,
       username: r.username,
-      date: r.date,
+      date: r.created_at,
       content: r.is_delete ? '**balasan telah dihapus**' : r.content,
     }))
   }

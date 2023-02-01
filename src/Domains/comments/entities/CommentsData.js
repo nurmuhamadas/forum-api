@@ -1,3 +1,5 @@
+const CommentRepliesData = require('../../commentReplies/entities/CommentRepliesData')
+
 class CommentsData {
   constructor(payload) {
     this._verifyPayload(payload)
@@ -21,7 +23,7 @@ class CommentsData {
       if (
         c.id === undefined ||
         c.username === undefined ||
-        c.date === undefined ||
+        c.created_at === undefined ||
         c.content === undefined ||
         c.is_delete === undefined
       ) {
@@ -31,7 +33,7 @@ class CommentsData {
       if (
         typeof c.id !== 'string' ||
         typeof c.username !== 'string' ||
-        !(c.date instanceof Date) ||
+        !(c.created_at instanceof Date) ||
         typeof c.content !== 'string' ||
         typeof c.is_delete !== 'boolean'
       ) {
@@ -39,48 +41,20 @@ class CommentsData {
       }
     })
 
-    if (replies.length > 0) {
-      replies.forEach((r) => {
-        if (
-          r.id === undefined ||
-          r.commentId === undefined ||
-          r.username === undefined ||
-          r.date === undefined ||
-          r.content === undefined ||
-          r.is_delete === undefined
-        ) {
-          throw new Error('COMMENTS_DATA.NOT_CONTAIN_NEEDED_PROPERTY')
-        }
-
-        if (
-          typeof r.id !== 'string' ||
-          typeof r.commentId !== 'string' ||
-          typeof r.username !== 'string' ||
-          !(r.date instanceof Date) ||
-          typeof r.content !== 'string' ||
-          typeof r.is_delete !== 'boolean'
-        ) {
-          throw new Error('COMMENTS_DATA.NOT_MEET_DATA_TYPE_SPECIFICATION')
-        }
-      })
-    }
+    const _replies = new CommentRepliesData({ replies })
   }
 
   _mapComments(comments, replies) {
     return comments.map((c) => {
-      const _replies = replies.filter((r) => r.commentId === c.id)
+      const selectedReplies = replies.filter((r) => r.comment_id === c.id)
+      const _replies = new CommentRepliesData({ replies: selectedReplies })
 
       return {
         id: c.id,
         username: c.username,
-        date: c.date,
+        date: c.created_at,
         content: c.is_delete ? '**komentar telah dihapus**' : c.content,
-        replies: _replies.map((r) => ({
-          id: r.id,
-          username: r.username,
-          date: r.date,
-          content: r.is_delete ? '**balasan telah dihapus**' : r.content,
-        })),
+        replies: _replies.replies,
       }
     })
   }

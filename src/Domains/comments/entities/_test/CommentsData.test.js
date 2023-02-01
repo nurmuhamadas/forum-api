@@ -1,3 +1,4 @@
+const CommentRepliesData = require('../../../commentReplies/entities/CommentRepliesData')
 const CommentsData = require('../CommentsData')
 
 describe('a CommentsData entities', () => {
@@ -34,15 +35,15 @@ describe('a CommentsData entities', () => {
       {
         id: 'comment-_pby2_tmXV6bcvcdev8xk',
         username: 'dicoding',
-        date: new Date(),
+        created_at: new Date(),
       },
     ]
     const commentReplies = [
       {
         id: 'reply-_pby2_tmXV6bcvcdev8xk',
-        commentId: 'comment-_pby2_tmXV6bcvcdev8xk',
+        comment_id: 'comment-_pby2_tmXV6bcvcdev8xk',
         username: 'dicoding',
-        date: new Date(),
+        created_at: new Date(),
         content: 'sebuah balasan komentar',
         is_delete: false,
       },
@@ -61,7 +62,7 @@ describe('a CommentsData entities', () => {
       {
         id: 'comment-_pby2_tmXV6bcvcdev8xk',
         username: 'dicoding',
-        date: new Date(),
+        created_at: new Date(),
         content: 'sebuah comment',
         is_delete: true,
       },
@@ -69,9 +70,9 @@ describe('a CommentsData entities', () => {
     const commentReplies = [
       {
         id: 'reply-_pby2_tmXV6bcvcdev8xk',
-        commentId: 'comment-_pby2_tmXV6bcvcdev8xk',
+        comment_id: 'comment-_pby2_tmXV6bcvcdev8xk',
         username: 'dicoding',
-        date: new Date(),
+        created_at: new Date(),
       },
     ]
 
@@ -79,28 +80,28 @@ describe('a CommentsData entities', () => {
     expect(
       () =>
         new CommentsData({ comments: commentData, replies: commentReplies }),
-    ).toThrowError('COMMENTS_DATA.NOT_CONTAIN_NEEDED_PROPERTY')
+    ).toThrowError('COMMENT_REPLIES_DATA.NOT_CONTAIN_NEEDED_PROPERTY')
   })
 
   it('should throw error when object of comments payload did not meet data specification', () => {
     // Arrange
     const commentData = [
       {
-        id: 'comment-_pby2_tmXV6bcvcdev8xk',
-        username: 'dicoding',
-        date: new Date(),
-        content: 'sebuah comment',
-        is_delete: true,
+        id: true,
+        username: {},
+        created_at: 'new Date()',
+        content: [],
+        is_delete: 123,
       },
     ]
     const commentReplies = [
       {
-        id: true,
-        commentId: {},
-        username: 123,
-        date: 'new Date()',
-        content: true,
-        is_delete: 'false',
+        id: 'reply-_pby2_tmXV6bcvcdev8xk',
+        comment_id: 'comment-_pby2_tmXV6bcvcdev8xk',
+        username: 'dicoding',
+        created_at: new Date(),
+        content: 'sebuah balasan komentar',
+        is_delete: false,
       },
     ]
 
@@ -115,21 +116,21 @@ describe('a CommentsData entities', () => {
     // Arrange
     const commentData = [
       {
-        id: true,
-        username: {},
-        date: 'new Date()',
-        content: [],
-        is_delete: 123,
+        id: 'comment-_pby2_tmXV6bcvcdev8xk',
+        username: 'dicoding',
+        created_at: new Date(),
+        content: 'sebuah comment',
+        is_delete: true,
       },
     ]
     const commentReplies = [
       {
-        id: 'reply-_pby2_tmXV6bcvcdev8xk',
-        commentId: 'comment-_pby2_tmXV6bcvcdev8xk',
-        username: 'dicoding',
-        date: new Date(),
-        content: 'sebuah balasan komentar',
-        is_delete: false,
+        id: true,
+        comment_id: {},
+        username: 123,
+        created_at: 'new Date()',
+        content: true,
+        is_delete: 'false',
       },
     ]
 
@@ -137,7 +138,7 @@ describe('a CommentsData entities', () => {
     expect(
       () =>
         new CommentsData({ comments: commentData, replies: commentReplies }),
-    ).toThrowError('COMMENTS_DATA.NOT_MEET_DATA_TYPE_SPECIFICATION')
+    ).toThrowError('COMMENT_REPLIES_DATA.NOT_MEET_DATA_TYPE_SPECIFICATION')
   })
 
   it('should create CommentsData array correctly', () => {
@@ -147,7 +148,7 @@ describe('a CommentsData entities', () => {
       {
         id: 'comment-_pby2_tmXV6bcvcdev8xk',
         username: 'dicoding',
-        date,
+        created_at: date,
         content: 'sebuah comment',
         is_delete: false,
       },
@@ -155,28 +156,23 @@ describe('a CommentsData entities', () => {
     const commentReplies = [
       {
         id: 'reply-_pby2_tmXV6bcvcdev8xk',
-        commentId: 'comment-_pby2_tmXV6bcvcdev8xk',
+        comment_id: 'comment-_pby2_tmXV6bcvcdev8xk',
         username: 'dicoding',
-        date,
+        created_at: date,
         content: 'sebuah balasan komentar',
         is_delete: false,
       },
     ]
-    const expectedCommentReplies = [
-      {
-        id: 'reply-_pby2_tmXV6bcvcdev8xk',
-        username: 'dicoding',
-        date,
-        content: 'sebuah balasan komentar',
-      },
-    ]
+    const expectedCommentReplies = new CommentRepliesData({
+      replies: commentReplies,
+    })
     const expectedCommentData = [
       {
         id: 'comment-_pby2_tmXV6bcvcdev8xk',
         username: 'dicoding',
         date,
         content: 'sebuah comment',
-        replies: expectedCommentReplies,
+        replies: expectedCommentReplies.replies,
       },
     ]
 
@@ -197,7 +193,7 @@ describe('a CommentsData entities', () => {
       {
         id: 'comment-_pby2_tmXV6bcvcdev8xk',
         username: 'dicoding',
-        date,
+        created_at: date,
         content: 'sebuah comment',
         is_delete: true,
       },
@@ -205,28 +201,23 @@ describe('a CommentsData entities', () => {
     const commentReplies = [
       {
         id: 'reply-_pby2_tmXV6bcvcdev8xk',
-        commentId: 'comment-_pby2_tmXV6bcvcdev8xk',
+        comment_id: 'comment-_pby2_tmXV6bcvcdev8xk',
         username: 'dicoding',
-        date,
+        created_at: date,
         content: 'sebuah balasan komentar',
         is_delete: true,
       },
     ]
-    const expectedCommentReplies = [
-      {
-        id: 'reply-_pby2_tmXV6bcvcdev8xk',
-        username: 'dicoding',
-        date,
-        content: '**balasan telah dihapus**',
-      },
-    ]
+    const expectedCommentReplies = new CommentRepliesData({
+      replies: commentReplies,
+    })
     const expectedCommentData = [
       {
         id: 'comment-_pby2_tmXV6bcvcdev8xk',
         username: 'dicoding',
         date,
         content: '**komentar telah dihapus**',
-        replies: expectedCommentReplies,
+        replies: expectedCommentReplies.replies,
       },
     ]
 
@@ -247,7 +238,7 @@ describe('a CommentsData entities', () => {
       {
         id: 'comment-_pby2_tmXV6bcvcdev8xk',
         username: 'dicoding',
-        date,
+        created_at: date,
         content: 'sebuah comment',
         is_delete: true,
       },

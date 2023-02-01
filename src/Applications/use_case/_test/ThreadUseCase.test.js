@@ -6,6 +6,7 @@ const DetailedThread = require('../../../Domains/threads/entities/DetailedThread
 const NotFoundError = require('../../../Commons/exceptions/NotFoundError')
 const CommentRepository = require('../../../Domains/comments/CommentRepository')
 const CommentReplyRepository = require('../../../Domains/commentReplies/CommentReplyRepository')
+const CommentsData = require('../../../Domains/comments/entities/CommentsData')
 
 describe('ThreadUseCase', () => {
   describe('AddThread', () => {
@@ -121,11 +122,11 @@ describe('ThreadUseCase', () => {
           is_delete: false,
         },
       ]
-      const expectedDetailedThread = new DetailedThread(
-        threadData,
-        commentData,
-        commentReplies,
-      )
+      const comments = new CommentsData({
+        comments: commentData,
+        replies: commentReplies,
+      })
+      const expectedDetailedThread = new DetailedThread(threadData, comments)
 
       /** creating dependency of use case */
       const mockThreadRepository = new ThreadRepository()

@@ -7,19 +7,25 @@ describe('CommentRepository interface', () => {
 
     // Action and Assert
     await expect(commentRepository.addComment({})).rejects.toThrowError(
-      'THREAD_REPOSITORY.METHOD_NOT_IMPLEMENTED',
+      'COMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED',
     )
     await expect(commentRepository.deleteComment(1)).rejects.toThrowError(
-      'THREAD_REPOSITORY.METHOD_NOT_IMPLEMENTED',
+      'COMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED',
     )
     await expect(
       commentRepository.verifyAvailableComment(1),
-    ).rejects.toThrowError('THREAD_REPOSITORY.METHOD_NOT_IMPLEMENTED')
+    ).rejects.toThrowError('COMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED')
     await expect(
       commentRepository.verifyCommentOwner(1, 1),
-    ).rejects.toThrowError('THREAD_REPOSITORY.METHOD_NOT_IMPLEMENTED')
+    ).rejects.toThrowError('COMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED')
     await expect(
       commentRepository.getCommentsByThreadId(1),
-    ).rejects.toThrowError('THREAD_REPOSITORY.METHOD_NOT_IMPLEMENTED')
+    ).rejects.toThrowError('COMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED')
+    await expect(commentRepository.putLikeCommentById(1)).rejects.toThrowError(
+      'COMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED',
+    )
+    await expect(commentRepository.getCommentLikes(1)).rejects.toThrowError(
+      'COMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED',
+    )
   })
 })

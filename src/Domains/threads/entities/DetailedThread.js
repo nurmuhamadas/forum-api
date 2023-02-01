@@ -1,44 +1,20 @@
-class DetailedThread {
-  constructor(thread, comments, replies) {
-    this._verifyPayload({ thread, comments, replies })
+const CommentsData = require('../../comments/entities/CommentsData')
 
-    const _comments = this._combineCommmentsAndReplies({ comments, replies })
+class DetailedThread {
+  constructor(thread, comments) {
+    this._verifyPayload({ thread, comments })
+
     this.thread = {
       id: thread.id,
       title: thread.title,
       body: thread.body,
       date: thread.created_at,
       username: thread.username,
-      comments: _comments,
+      comments: comments.comments,
     }
   }
 
-  _combineCommmentsAndReplies({ comments, replies }) {
-    return comments.map((comment) => {
-      const _commentReply = replies
-        .filter((r) => r.comment_id === comment.id)
-        .map((reply) => ({
-          id: reply.id,
-          username: reply.username,
-          date: reply.created_at,
-          content: reply.is_delete
-            ? '**balasan telah dihapus**'
-            : reply.content,
-        }))
-
-      return {
-        id: comment.id,
-        username: comment.username,
-        date: comment.created_at,
-        content: comment.is_delete
-          ? '**komentar telah dihapus**'
-          : comment.content,
-        replies: _commentReply,
-      }
-    })
-  }
-
-  _checkNeededProperties({ thread, comments, replies }) {
+  _checkNeededProperties({ thread, comments }) {
     if (!thread) return true
     if (
       !thread.id ||
@@ -49,34 +25,15 @@ class DetailedThread {
     ) {
       return true
     }
-    if (comments.length) {
-      if (
-        !comments[0].id ||
-        !comments[0].username ||
-        comments[0].is_delete === undefined ||
-        !comments[0].created_at ||
-        !comments[0].content
-      ) {
-        return true
-      }
-    }
-    if (replies.length) {
-      if (
-        !replies[0].id ||
-        !replies[0].comment_id ||
-        !replies[0].username ||
-        replies[0].is_delete === undefined ||
-        !replies[0].created_at ||
-        !replies[0].content
-      ) {
-        return true
-      }
+
+    if (comments === undefined) {
+      return true
     }
 
     return false
   }
 
-  _checkPropertiesDataType({ thread, comments, replies }) {
+  _checkPropertiesDataType({ thread, comments }) {
     if (
       typeof thread !== 'object' ||
       typeof thread.id !== 'string' ||
@@ -87,28 +44,9 @@ class DetailedThread {
     ) {
       return true
     }
-    if (comments.length) {
-      if (
-        typeof comments[0].id !== 'string' ||
-        typeof comments[0].username !== 'string' ||
-        typeof comments[0].is_delete !== 'boolean' ||
-        !(comments[0].created_at instanceof Date) ||
-        typeof comments[0].content !== 'string'
-      ) {
-        return true
-      }
-    }
-    if (replies.length) {
-      if (
-        typeof replies[0].id !== 'string' ||
-        typeof replies[0].comment_id !== 'string' ||
-        typeof replies[0].username !== 'string' ||
-        typeof replies[0].is_delete !== 'boolean' ||
-        !(replies[0].created_at instanceof Date) ||
-        typeof replies[0].content !== 'string'
-      ) {
-        return true
-      }
+
+    if (!(comments instanceof CommentsData)) {
+      return true
     }
 
     return false
