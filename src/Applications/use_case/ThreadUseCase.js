@@ -7,7 +7,7 @@ class ThreadUseCase {
   constructor({ threadRepository, commentRepository, repliesRepository }) {
     this._threadRepository = threadRepository
     this._commentRepository = commentRepository
-    // this._repliesRepository = repliesRepository
+    this._repliesRepository = repliesRepository
   }
 
   async addThread(userId, useCasePayload) {
