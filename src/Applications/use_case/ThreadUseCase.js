@@ -4,10 +4,16 @@ const DetailedThread = require('../../Domains/threads/entities/DetailedThread')
 const RegisterThread = require('../../Domains/threads/entities/RegisterThread')
 
 class ThreadUseCase {
-  constructor({ threadRepository, commentRepository, repliesRepository }) {
+  constructor({
+    threadRepository,
+    commentRepository,
+    repliesRepository,
+    commentLikeRepository,
+  }) {
     this._threadRepository = threadRepository
     this._commentRepository = commentRepository
     this._repliesRepository = repliesRepository
+    this._commentLikeRepository = commentLikeRepository
   }
 
   async addThread(userId, useCasePayload) {
@@ -34,12 +40,17 @@ class ThreadUseCase {
     )
     const commentIds = commentsData.map((c) => c.id)
 
+    // comment like
+    const commentLikes =
+      await this._commentLikeRepository.getCommentLikesByCommentIds(commentIds)
+
     // replies data
     const replies = await this._repliesRepository.getCommentRepliesByCommentIds(
       commentIds,
     )
     const comments = new CommentsData({
       comments: commentsData,
+      commentLikes,
       replies,
     })
 

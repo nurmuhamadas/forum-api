@@ -39,6 +39,7 @@ describe('a DetailedThread entities', () => {
     const comments = new CommentsData({
       comments: commentData,
       replies: commentReplies,
+      commentLikes: [],
     })
 
     // Action and Assert
@@ -96,6 +97,7 @@ describe('a DetailedThread entities', () => {
     const comments = new CommentsData({
       comments: commentData,
       replies: commentReplies,
+      commentLikes: [],
     })
 
     // Action and Assert
@@ -161,11 +163,13 @@ describe('a DetailedThread entities', () => {
     const comments = new CommentsData({
       comments: commentData,
       replies: commentReplies,
+      commentLikes: [],
     })
 
     const expectedCommentData = new CommentsData({
       comments: commentData,
       replies: commentReplies,
+      commentLikes: [],
     })
     const expectedThreadData = {
       id: threadData.id,
@@ -215,11 +219,13 @@ describe('a DetailedThread entities', () => {
     const comments = new CommentsData({
       comments: commentData,
       replies: commentReplies,
+      commentLikes: [],
     })
 
     const expectedCommentData = new CommentsData({
       comments: commentData,
       replies: commentReplies,
+      commentLikes: [],
     })
     const expectedThreadData = {
       id: threadData.id,
@@ -237,7 +243,7 @@ describe('a DetailedThread entities', () => {
     expect(thread).toStrictEqual(expectedThreadData)
   })
 
-  it('should create DetailedThread object correctly without comment and comment reply', () => {
+  it('should create DetailedThread object correctly without comment and comment reply and comment likes', () => {
     // Arrange
     const date = new Date()
     const threadData = {
@@ -258,6 +264,7 @@ describe('a DetailedThread entities', () => {
     const comments = new CommentsData({
       comments: [],
       replies: [],
+      commentLikes: [],
     })
 
     // Action
