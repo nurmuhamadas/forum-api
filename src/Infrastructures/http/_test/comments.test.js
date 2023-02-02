@@ -5,6 +5,7 @@ const ServerTestHelper = require('../../../../tests/ServerTestHelper')
 const ThreadsTableTestHelper = require('../../../../tests/ThreadsTableTestHelper')
 const CommentsTableTestHelper = require('../../../../tests/CommentsTableTestHelper')
 const { ERROR_MESSAGE } = require('../../../Commons/consts')
+const CommentLikesTableTestHelper = require('../../../../tests/CommentLikesTableTestHelper')
 
 describe('/threads/{threadId}/comments endpoint', () => {
   afterAll(async () => {
@@ -216,6 +217,96 @@ describe('/threads/{threadId}/comments endpoint', () => {
       const response = await server.inject({
         method: 'DELETE',
         url: `/threads/thread-123/comments/${commentId}`,
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+
+      // Assert
+      const responseJson = JSON.parse(response.payload)
+      expect(response.statusCode).toEqual(200)
+      expect(responseJson.status).toEqual('success')
+    })
+  })
+
+  describe('when PUT /threads/{threadId}/comments/{commentId}/likes', () => {
+    let accessToken = ''
+    beforeEach(async () => {
+      // Add user and login
+      accessToken = await ServerTestHelper.getAccessToken({})
+      // Add thread
+      await ThreadsTableTestHelper.addThread({ id: 'thread-123' })
+      await CommentsTableTestHelper.addComment({ id: 'comment-123' })
+    })
+
+    it('should response 404 when thread is not found', async () => {
+      // Arrange
+      const server = await createServer(container)
+
+      // Action
+      const response = await server.inject({
+        method: 'PUT',
+        url: '/threads/wrongid/comments/comment-123/likes',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+
+      const responseJson = JSON.parse(response.payload)
+      expect(response.statusCode).toEqual(404)
+      expect(responseJson.status).toEqual('fail')
+      expect(responseJson.message).toEqual(ERROR_MESSAGE.threadNotFound)
+    })
+
+    it('should response 404 when comment is not found', async () => {
+      // Arrange
+      const server = await createServer(container)
+
+      // Action
+      const response = await server.inject({
+        method: 'PUT',
+        url: '/threads/thread-123/comments/wrongid/likes',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+
+      const responseJson = JSON.parse(response.payload)
+      expect(response.statusCode).toEqual(404)
+      expect(responseJson.status).toEqual('fail')
+      expect(responseJson.message).toEqual(ERROR_MESSAGE.commentNotFound)
+    })
+
+    it('should response 200 and like comment', async () => {
+      // Arrange
+      const commentId = 'comment-123'
+      const server = await createServer(container)
+
+      // Action
+      const response = await server.inject({
+        method: 'PUT',
+        url: `/threads/thread-123/comments/${commentId}/likes`,
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+
+      // Assert
+      const responseJson = JSON.parse(response.payload)
+      expect(response.statusCode).toEqual(200)
+      expect(responseJson.status).toEqual('success')
+    })
+
+    it('should response 200 and unlike comment', async () => {
+      // Arrange
+      const commentId = 'comment-123'
+      const server = await createServer(container)
+
+      // Action
+      await CommentLikesTableTestHelper.addCommentLike({ isLiked: true })
+      const response = await server.inject({
+        method: 'PUT',
+        url: `/threads/thread-123/comments/${commentId}/likes`,
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },

@@ -7,6 +7,7 @@ const NotFoundError = require('../../../Commons/exceptions/NotFoundError')
 const CommentRepository = require('../../../Domains/comments/CommentRepository')
 const CommentReplyRepository = require('../../../Domains/commentReplies/CommentReplyRepository')
 const CommentsData = require('../../../Domains/comments/entities/CommentsData')
+const CommentLikeRepository = require('../../../Domains/commentLikes/CommentLikeRepository')
 
 describe('ThreadUseCase', () => {
   describe('AddThread', () => {
@@ -122,15 +123,18 @@ describe('ThreadUseCase', () => {
           is_delete: false,
         },
       ]
+      const commentLikes = [{ comment_id: 'comment-123', count: '1' }]
       const comments = new CommentsData({
         comments: commentData,
         replies: commentReplies,
+        commentLikes,
       })
       const expectedDetailedThread = new DetailedThread(threadData, comments)
 
       /** creating dependency of use case */
       const mockThreadRepository = new ThreadRepository()
       const mockCommentRepository = new CommentRepository()
+      const mockCommentLikeRepository = new CommentLikeRepository()
       const mockReplyRepository = new CommentReplyRepository()
       /** mocking needed function */
       mockThreadRepository.verifyAvailableThread = jest.fn(() =>
@@ -145,11 +149,15 @@ describe('ThreadUseCase', () => {
       mockReplyRepository.getCommentRepliesByCommentIds = jest.fn(() =>
         Promise.resolve(commentReplies),
       )
+      mockCommentLikeRepository.getCommentLikesByCommentIds = jest.fn(() =>
+        Promise.resolve(commentLikes),
+      )
 
       /** creating use case instance */
       const getThreadUseCase = new ThreadUseCase({
         threadRepository: mockThreadRepository,
         commentRepository: mockCommentRepository,
+        commentLikeRepository: mockCommentLikeRepository,
         repliesRepository: mockReplyRepository,
       })
 
@@ -168,6 +176,9 @@ describe('ThreadUseCase', () => {
       expect(mockReplyRepository.getCommentRepliesByCommentIds).toBeCalledWith(
         commentIds,
       )
+      expect(
+        mockCommentLikeRepository.getCommentLikesByCommentIds,
+      ).toBeCalledWith(commentIds)
     })
   })
 })

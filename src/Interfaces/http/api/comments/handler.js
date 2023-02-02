@@ -6,6 +6,7 @@ class CommentsHandler {
 
     this.postCommentHandler = this.postCommentHandler.bind(this)
     this.deleteCommentHandler = this.deleteCommentHandler.bind(this)
+    this.putCommentLikeHandler = this.putCommentLikeHandler.bind(this)
   }
 
   async postCommentHandler({ payload, auth, params }, h) {
@@ -37,6 +38,21 @@ class CommentsHandler {
     const commentUseCase = this._container.getInstance(CommentUseCase.name)
 
     await commentUseCase.deleteComment({ userId, threadId, commentId })
+
+    const response = h.response({
+      status: 'success',
+    })
+    response.code(200)
+    return response
+  }
+
+  async putCommentLikeHandler({ auth, params }, h) {
+    const { id: userId } = auth.credentials
+    const { threadId, commentId } = params
+
+    const commentUseCase = this._container.getInstance(CommentUseCase.name)
+
+    await commentUseCase.likeUnlikeComment({ userId, commentId, threadId })
 
     const response = h.response({
       status: 'success',

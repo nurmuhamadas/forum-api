@@ -14,18 +14,6 @@ class CommentRepository {
   async deleteComment(userid) {
     throw new Error('COMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED')
   }
-
-  async getCommentsByThreadId(threadId) {
-    throw new Error('COMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED')
-  }
-
-  async putLikeCommentById(commentId) {
-    throw new Error('COMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED')
-  }
-
-  async getCommentLikes(commentId) {
-    throw new Error('COMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED')
-  }
 }
 
 module.exports = CommentRepository
