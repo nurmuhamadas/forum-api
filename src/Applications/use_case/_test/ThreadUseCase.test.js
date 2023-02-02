@@ -7,7 +7,7 @@ const NotFoundError = require('../../../Commons/exceptions/NotFoundError')
 const CommentRepository = require('../../../Domains/comments/CommentRepository')
 const CommentReplyRepository = require('../../../Domains/commentReplies/CommentReplyRepository')
 const CommentsData = require('../../../Domains/comments/entities/CommentsData')
-const CommentLikeRepository = require('../../../Domains/commentLikes/commentLikeRepository')
+const CommentLikeRepository = require('../../../Domains/commentLikes/CommentLikeRepository')
 
 describe('ThreadUseCase', () => {
   describe('AddThread', () => {

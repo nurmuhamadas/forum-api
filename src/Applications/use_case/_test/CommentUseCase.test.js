@@ -4,7 +4,7 @@ const RegisterComment = require('../../../Domains/comments/entities/RegisterComm
 const RegisteredComment = require('../../../Domains/comments/entities/RegisteredComment')
 const ThreadRepository = require('../../../Domains/threads/ThreadRepository')
 const NotFoundError = require('../../../Commons/exceptions/NotFoundError')
-const CommentLikeRepository = require('../../../Domains/commentLikes/commentLikeRepository')
+const CommentLikeRepository = require('../../../Domains/commentLikes/CommentLikeRepository')
 
 describe('CommentUseCase', () => {
   describe('AddComment', () => {

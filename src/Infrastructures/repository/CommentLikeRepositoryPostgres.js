@@ -1,4 +1,4 @@
-const CommentLikeRepository = require('../../Domains/commentLikes/commentLikeRepository')
+const CommentLikeRepository = require('../../Domains/commentLikes/CommentLikeRepository')
 
 class CommentLikeRepositoryPostgres extends CommentLikeRepository {
   constructor(pool, idGenerator) {

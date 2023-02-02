@@ -35,7 +35,7 @@ const CommentUseCase = require('../Applications/use_case/CommentUseCase')
 const CommentReplyRepository = require('../Domains/commentReplies/CommentReplyRepository')
 const CommentReplyRepositoryPostgres = require('./repository/CommentReplyRepositoryPostgres')
 const CommentReplyUseCase = require('../Applications/use_case/CommentReplyUseCase')
-const CommentLikeRepository = require('../Domains/commentLikes/commentLikeRepository')
+const CommentLikeRepository = require('../Domains/commentLikes/CommentLikeRepository')
 const CommentLikeRepositoryPostgres = require('./repository/CommentLikeRepositoryPostgres')
 
 // creating container
